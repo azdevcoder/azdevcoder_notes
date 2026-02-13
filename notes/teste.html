@@ -208,6 +208,7 @@
                     if (f.name.endsWith('.html')) icon = 'bi-filetype-html';
                     if (f.name.endsWith('.js')) icon = 'bi-filetype-js';
                     if (f.name.endsWith('.css')) icon = 'bi-filetype-css';
+                    if (f.name.endsWith('.txt')) icon = 'bi-filetype-txt';
                     
                     btn.innerHTML = `<i class="bi ${icon} me-2"></i>${f.name}`;
                     btn.onclick = () => loadFile(f.name);
