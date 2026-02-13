@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AzDev Code & Doc Studio</title>
+    <title>AzDev Studio - Code & Word</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
@@ -13,59 +13,64 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/addon/hint/show-hint.min.css">
 
     <style>
-        body, html { height: 100%; margin: 0; overflow: hidden; background: #0b0e14; }
+        body, html { height: 100%; margin: 0; overflow: hidden; background: #0f111a; }
         .app-container { height: 100vh; display: flex; flex-direction: column; }
-        .CodeMirror { flex: 1; height: auto; font-family: 'Fira Code', monospace; font-size: 14px; }
+        .CodeMirror { flex: 1; height: auto; font-family: 'Fira Code', monospace; font-size: 14px; border-radius: 0 0 8px 8px; }
         
-        /* Estilo para simular Word */
-        .word-mode .CodeMirror { display: none; }
-        #rich-editor { display: none; flex: 1; background: white; color: black; padding: 40px; overflow-y: auto; outline: none; }
+        /* Estilo Word */
+        #rich-editor { display: none; flex: 1; background: white; color: black; padding: 30px; overflow-y: auto; outline: none; border-radius: 0 0 8px 8px; }
         .word-mode #rich-editor { display: block; }
+        .word-mode .CodeMirror { display: none; }
         
-        .toolbar-word { display: none; gap: 5px; padding: 5px; background: #f8f9fa; border-radius: 5px; margin-bottom: 5px; }
+        .toolbar-word { display: none; gap: 5px; padding: 8px; background: #eee; border-radius: 8px 8px 0 0; }
         .word-mode .toolbar-word { display: flex; }
 
         @media (max-width: 768px) { .btn-text { display: none; } }
     </style>
 </head>
-<body class="code-mode">
+<body>
 
 <div class="app-container">
     <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom px-3">
-        <button class="btn btn-outline-secondary me-2 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarFiles"><i class="bi bi-list"></i></button>
+        <button class="btn btn-outline-secondary me-2 d-md-none" data-bs-toggle="offcanvas" data-bs-target="#sidebarMobile"><i class="bi bi-list"></i></button>
         <span class="navbar-brand mb-0 h1">AzDev Studio</span>
         
         <div class="ms-auto d-flex align-items-center gap-2">
             <div class="btn-group btn-group-sm">
-                <button class="btn btn-primary" onclick="switchMode('code')"><i class="bi bi-code"></i> Code</button>
-                <button class="btn btn-light" onclick="switchMode('word')"><i class="bi bi-file-word"></i> Word</button>
+                <button id="btn-code" class="btn btn-primary active" onclick="switchMode('code')">Code</button>
+                <button id="btn-word" class="btn btn-outline-light" onclick="switchMode('word')">Word</button>
             </div>
             <select id="languageSelect" class="form-select form-select-sm" style="width: auto;">
                 <option value="htmlmixed">HTML</option>
-                <option value="css">CSS</option>
                 <option value="javascript">JS</option>
                 <option value="python">Python</option>
+                <option value="css">CSS</option>
             </select>
+            <span id="status-badge" class="badge bg-secondary">Status</span>
         </div>
     </nav>
 
     <div class="row g-0 flex-grow-1 overflow-hidden">
         <div class="col-md-3 col-lg-2 bg-body-tertiary border-end d-none d-md-block p-3 overflow-auto">
+            <div class="d-flex justify-content-between mb-3">
+                <small class="fw-bold">ARQUIVOS</small>
+                <button class="btn btn-sm btn-link p-0" onclick="fetchFileList()"><i class="bi bi-arrow-clockwise"></i></button>
+            </div>
             <div class="list-group list-group-flush" id="fileList"></div>
         </div>
 
-        <div class="col-md-9 col-lg-10 p-2 d-flex flex-column overflow-hidden">
-            <div class="toolbar-word border shadow-sm">
-                <button class="btn btn-sm btn-outline-dark" onclick="execCmd('bold')"><b>B</b></button>
-                <button class="btn btn-sm btn-outline-dark" onclick="execCmd('italic')"><i>I</i></button>
-                <button class="btn btn-sm btn-outline-dark" onclick="execCmd('insertUnorderedList')"><i class="bi bi-list-ul"></i></button>
-                <button class="btn btn-sm btn-outline-dark" onclick="execCmd('justifyLeft')"><i class="bi bi-text-left"></i></button>
-                <button class="btn btn-sm btn-outline-dark" onclick="execCmd('justifyCenter')"><i class="bi bi-text-center"></i></button>
+        <div class="col-md-9 col-lg-10 p-2 p-md-4 d-flex flex-column overflow-hidden">
+            <div class="toolbar-word border-bottom">
+                <button class="btn btn-sm btn-dark" onclick="execCmd('bold')"><b>B</b></button>
+                <button class="btn btn-sm btn-dark" onclick="execCmd('italic')"><i>I</i></button>
+                <button class="btn btn-sm btn-dark" onclick="execCmd('underline')"><u>U</u></button>
+                <button class="btn btn-sm btn-dark" onclick="execCmd('insertUnorderedList')"><i class="bi bi-list-ul"></i></button>
             </div>
 
-            <div class="input-group mb-2">
-                <input type="text" id="fileName" class="form-control form-control-sm" placeholder="nome.html">
+            <div class="input-group mb-2 mt-2">
+                <input type="text" id="fileName" class="form-control form-control-sm" placeholder="nome.py">
                 <button class="btn btn-sm btn-success" onclick="saveToGitHub()"><i class="bi bi-save"></i> <span class="btn-text">Salvar</span></button>
+                <button class="btn btn-sm btn-danger" onclick="deleteFile()"><i class="bi bi-trash"></i></button>
             </div>
             
             <textarea id="code-editor"></textarea>
@@ -74,104 +79,108 @@
     </div>
 </div>
 
-<div class="offcanvas offcanvas-start" id="sidebarFiles">
+<div class="offcanvas offcanvas-start" id="sidebarMobile">
+    <div class="offcanvas-header border-bottom"><h5>Arquivos</h5><button class="btn-close" data-bs-dismiss="offcanvas"></button></div>
     <div class="offcanvas-body p-0"><div class="list-group list-group-flush" id="fileListMobile"></div></div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/codemirror.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/addon/hint/show-hint.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/addon/hint/javascript-hint.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/addon/hint/xml-hint.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/addon/hint/html-hint.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/addon/hint/javascript-hint.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/addon/hint/css-hint.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/javascript/javascript.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/python/python.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/css/css.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/htmlmixed/htmlmixed.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/xml/xml.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
     const BACKEND_URL = "https://azdevcoder-notes.onrender.com/api/notes";
     let currentMode = 'code';
 
-    // Configuração do Editor CodeMirror
     const editor = CodeMirror.fromTextArea(document.getElementById("code-editor"), {
-        lineNumbers: true,
-        theme: "dracula",
-        mode: "htmlmixed",
-        extraKeys: {"Ctrl-Space": "autocomplete"}, // Atalho VS Code para completar
-        autoCloseTags: true,
-        autoCloseBrackets: true
+        lineNumbers: true, theme: "dracula", mode: "htmlmixed",
+        extraKeys: {"Ctrl-Space": "autocomplete"},
+        lineWrapping: true, autoCloseTags: true
     });
 
-    // Auto-completar enquanto digita (IntelliSense)
-    editor.on("inputRead", function(cm, change) {
-        if (change.text[0].match(/[a-z]/i)) {
-            cm.showHint({ completeSingle: false });
-        }
+    // IntelliSense (Sugestão ao digitar)
+    editor.on("inputRead", (cm, change) => {
+        if (change.text[0].match(/[a-z0-9]/i)) cm.showHint({ completeSingle: false });
     });
+
+    function setStatus(msg, type = 'secondary') {
+        const b = document.getElementById('status-badge');
+        b.innerText = msg; b.className = `badge bg-${type}`;
+    }
 
     function switchMode(mode) {
         currentMode = mode;
+        const rich = document.getElementById('rich-editor');
         if(mode === 'word') {
             document.body.classList.add('word-mode');
-            document.getElementById('rich-editor').innerHTML = editor.getValue();
+            rich.innerHTML = editor.getValue();
+            document.getElementById('btn-word').className = "btn btn-light active";
+            document.getElementById('btn-code').className = "btn btn-outline-primary";
         } else {
             document.body.classList.remove('word-mode');
-            editor.setValue(document.getElementById('rich-editor').innerHTML);
+            editor.setValue(rich.innerHTML);
+            document.getElementById('btn-code').className = "btn btn-primary active";
+            document.getElementById('btn-word').className = "btn btn-outline-light";
         }
     }
 
     function execCmd(cmd) { document.execCommand(cmd, false, null); }
 
-    // Funções de API (Lista, Salvar, Abrir)
     async function fetchFileList() {
+        setStatus("Lendo...", "warning");
         try {
             const r = await fetch(`${BACKEND_URL}?t=${Date.now()}`);
             const files = await r.json();
-            const list = document.getElementById('fileList');
-            list.innerHTML = '';
-            files.forEach(f => {
-                if(f.type === 'file') {
-                    const btn = document.createElement('button');
-                    btn.className = 'list-group-item list-group-item-action border-0 small';
-                    btn.innerHTML = `<i class="bi bi-file-code me-2"></i>${f.name}`;
-                    btn.onclick = () => loadFile(f.name);
-                    list.appendChild(btn);
-                }
-            });
-        } catch (e) { console.error("Erro ao listar"); }
+            const updateList = (id) => {
+                const el = document.getElementById(id);
+                el.innerHTML = '';
+                files.forEach(f => {
+                    if(f.type === 'file') {
+                        const b = document.createElement('button');
+                        b.className = 'list-group-item list-group-item-action border-0 small';
+                        b.innerHTML = `<i class="bi bi-file-earmark-code me-2"></i>${f.name}`;
+                        b.onclick = () => loadFile(f.name);
+                        el.appendChild(b);
+                    }
+                });
+            };
+            updateList('fileList');
+            updateList('fileListMobile');
+            setStatus("Pronto", "success");
+        } catch (e) { setStatus("Erro 401", "danger"); }
     }
 
     async function loadFile(name) {
+        setStatus("Abrindo...", "info");
         try {
             const r = await fetch(`${BACKEND_URL}/${name}`);
             const data = await r.json();
             const content = decodeURIComponent(escape(atob(data.content)));
             document.getElementById('fileName').value = data.name;
-            
             if(currentMode === 'word') document.getElementById('rich-editor').innerHTML = content;
             else editor.setValue(content);
-            
-            // Detectar linguagem
-            const ext = name.split('.').pop();
-            const modes = { 'py': 'python', 'js': 'javascript', 'html': 'htmlmixed', 'css': 'css' };
-            if(modes[ext]) {
-                editor.setOption("mode", modes[ext]);
-                document.getElementById('languageSelect').value = modes[ext];
-            }
-        } catch (e) { alert("Erro ao carregar"); }
+            setStatus("Editando", "primary");
+        } catch (e) { setStatus("Erro", "danger"); }
     }
 
     async function saveToGitHub() {
         const name = document.getElementById('fileName').value;
         const text = currentMode === 'word' ? document.getElementById('rich-editor').innerHTML : editor.getValue();
-        if (!name) return alert("Nome do arquivo vazio!");
-
+        if (!name) return alert("Dê um nome ao arquivo!");
+        setStatus("Salvando...", "warning");
         try {
             let sha = "";
             const check = await fetch(`${BACKEND_URL}/${name}`);
             if (check.ok) { const d = await check.json(); sha = d.sha; }
-
             const r = await fetch(`${BACKEND_URL}/${name}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
@@ -181,71 +190,30 @@
                     sha: sha || null
                 })
             });
-            if (r.ok) { alert("Salvo com sucesso!"); fetchFileList(); }
-        } catch (e) { alert("Erro ao salvar"); }
+            if (r.ok) { setStatus("Salvo!", "success"); fetchFileList(); }
+        } catch (e) { setStatus("Erro", "danger"); }
     }
 
-    // 4. EXCLUIR ARQUIVO (Nova Versão Integrada)
     async function deleteFile() {
-        const fileName = document.getElementById('fileName').value;
-        
-        if (!fileName) {
-            return alert("Selecione um arquivo na lista para poder excluí-lo.");
-        }
-
-        if (!confirm(`André, tem certeza que deseja EXCLUIR permanentemente o arquivo "${fileName}"?`)) {
-            return;
-        }
-
+        const name = document.getElementById('fileName').value;
+        if (!name || !confirm(`Excluir ${name}?`)) return;
         setStatus("Excluindo...", "danger");
-
         try {
-            // 1. Busca o SHA do arquivo para autorizar a exclusão no GitHub
-            const checkFile = await fetch(`${BACKEND_URL}/${fileName}`);
-            
-            if (!checkFile.ok) {
-                setStatus("Não encontrado", "warning");
-                return alert("Arquivo não existe no repositório.");
-            }
-
-            const fileData = await checkFile.json();
-            const sha = fileData.sha;
-
-            // 2. Envia a requisição de DELETE para o seu Proxy no Render
-            const response = await fetch(`${BACKEND_URL}/${fileName}`, {
+            const check = await fetch(`${BACKEND_URL}/${name}`);
+            const d = await check.json();
+            await fetch(`${BACKEND_URL}/${name}`, {
                 method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    message: `Delete via AzDev Studio: ${fileName}`,
-                    sha: sha
-                })
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: "Delete", sha: d.sha })
             });
-
-            if (response.ok) {
-                setStatus("Excluído!", "success");
-                
-                // Limpa os campos após excluir
-                document.getElementById('fileName').value = "";
-                editor.setValue(""); // Limpa o CodeMirror
-                document.getElementById('rich-editor').innerHTML = ""; // Limpa o Word
-                
-                // Atualiza a lista de arquivos lateral
-                fetchFileList();
-            } else {
-                const err = await response.json();
-                setStatus("Erro ao excluir", "danger");
-                alert("Erro: " + (err.message || "Não foi possível excluir."));
-            }
-        } catch (err) {
-            console.error(err);
-            setStatus("Erro de conexão", "danger");
-        }
+            document.getElementById('fileName').value = "";
+            editor.setValue("");
+            document.getElementById('rich-editor').innerHTML = "";
+            fetchFileList();
+        } catch (e) { setStatus("Erro", "danger"); }
     }
 
     window.onload = fetchFileList;
 </script>
 </body>
 </html>
-
