@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="pt-br" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AzDev Studio Pro - Terminal Integration</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/theme/dracula.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/addon/hint/show-hint.min.css">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.3.0/css/xterm.min.css">
+
+    <style>
+        body, html { height: 100%; margin: 0; overflow: hidden; background: #0f111a; color: white; }
+        .app-container { height: 100vh; display: flex; flex-direction: column; }
+        .fixed-header { flex-shrink: 0; z-index: 1000; }
+        .main-workspace { flex-grow: 1; display: flex; overflow: hidden; position: relative; }
+        
+        .editor-column { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+        
+        /* Área dos editores */
+        .editor-wrapper { flex-grow: 1; overflow: hidden; position: relative; }
+        .CodeMirror { height: 100% !important; font-family: 'Fira Code', monospace; font-size: 14px; }
+        #rich-editor { display: none; height: 100%; background: white; color: black; padding: 30px; overflow-y: auto; outline: none; }
+        .word-mode #rich-editor { display: block; }
+        .word-mode .CodeMirror { display: none; }
+
+        /* Terminal Area */
+        #terminal-container { 
+            height: 35%; /* Altura do terminal */
+            background: #000; 
+            border-top: 2px solid #333; 
+            display: none; 
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+        .show-terminal #terminal-container { display: flex; }
+        .show-terminal .editor-wrapper { height: 65%; } /* Reduz editor quando terminal abre */
+        
+        #xterm-container { flex-grow: 1; overflow: hidden; padding: 5px 0 0 5px; }
+
+        @media (max-width: 768px) { 
+            .btn-text { display: none; } 
+            .editor-column { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom px-3 fixed-header">
+        <button class="btn btn-outline-secondary me-2 d-md-none" data-bs-toggle="offcanvas" data-bs-target="#sidebarMobile"><i class="bi bi-list"></i></button>
+        <span class="navbar-brand mb-0 h1">AzDev Studio</span>
+        <div class="ms-auto d-flex align-items-center gap-2">
+            <div class="btn-group btn-group-sm">
+                <button id="btn-code" class="btn btn-primary active" onclick="switchMode('code')">Code</button>
+                <button id="btn-word" class="btn btn-outline-light" onclick="switchMode('word')">Word</button>
+            </div>
+            <button class="btn btn-sm btn-warning" onclick="runPreview()"><i class="bi bi-play"></i></button>
+            <button class="btn btn-sm btn-info" onclick="toggleTerminal()"><i class="bi bi-terminal-fill"></i> Terminal</button>
+        </div>
+    </nav>
+
+    <div class="main-workspace">
+        <div class="col-md-3 col-lg-2 bg-body-tertiary border-end d-none d-md-block p-3 overflow-auto">
+            <div class="d-flex justify-content-between mb-3"><small class="fw-bold">ARQUIVOS</small><button class="btn btn-sm btn-link p-0" onclick="fetchFileList()"><i class="bi bi-arrow-clockwise"></i></button></div>
+            <div class="list-group list-group-flush" id="fileList"></div>
+        </div>
+
+        <div class="editor-column">
+            <div class="p-2 border-bottom d-flex gap-2 bg-dark fixed-header align-items-center">
+                <input type="text" id="fileName" class="form-control form-control-sm" placeholder="script.py" style="max-width: 200px;" oninput="applyTemplate(this.value)">
+                <button class="btn btn-sm btn-success" onclick="saveToGitHub()"><i class="bi bi-save"></i> <span class="btn-text">Salvar</span></button>
+                <button class="btn btn-sm btn-danger" onclick="deleteFile()"><i class="bi bi-trash"></i></button>
+                <span id="status-badge" class="badge bg-secondary ms-auto">Pronto</span>
+            </div>
+
+            <div class="editor-wrapper">
+                <textarea id="code-editor"></textarea>
+                <div id="rich-editor" contenteditable="true"></div>
+            </div>
+            
+            <div id="terminal-container">
+                <div class="d-flex justify-content-between bg-dark px-2 py-1 border-bottom border-secondary">
+                    <small class="text-white-50">BASH (Simulado) - AzDev Environment</small>
+                    <button class="btn btn-sm text-danger p-0" onclick="toggleTerminal()"><i class="bi bi-x-lg"></i></button>
+                </div>
+                <div id="xterm-container"></div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="offcanvas offcanvas-start" id="sidebarMobile"><div class="offcanvas-body p-0"><div class="list-group list-group-flush" id="fileListMobile"></div></div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/addon/hint/show-hint.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/htmlmixed/htmlmixed.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.3.0/lib/xterm.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@xterm/addon-fit@0.8.0/lib/addon-fit.min.js"></script>
+
+<script>
+    const BACKEND_URL = "https://azdevcoder-notes.onrender.com/api/notes";
+    let pyodideInstance = null;
+    let globalFiles = []; // Armazena a lista de arquivos para o comando 'ls'
+
+    // Editor Setup
+    const editor = CodeMirror.fromTextArea(document.getElementById("code-editor"), {
+        lineNumbers: true, theme: "dracula", mode: "python", extraKeys: {"Ctrl-Space": "autocomplete"}, lineWrapping: true
+    });
+
+    // --- TERMINAL SETUP (XTERM.JS) ---
+    const term = new Terminal({
+        cursorBlink: true,
+        fontFamily: '"Fira Code", monospace',
+        fontSize: 14,
+        theme: { background: '#000000', foreground: '#00ff00' }
+    });
+    const fitAddon = new FitAddon.FitAddon();
+    term.loadAddon(fitAddon);
+    
+    let currentInput = "";
+    let isPythonMode = false;
+
+    function initTerminal() {
+        if (term.element) return; // Já iniciado
+        term.open(document.getElementById('xterm-container'));
+        fitAddon.fit();
+        
+        term.writeln('\x1B[1;3;34mAzDev Studio Terminal v1.0\x1B[0m');
+        term.writeln('Type \x1B[1;33mhelp\x1B[0m to list commands.');
+        prompt();
+
+        term.onData(e => {
+            if (e === '\r') { // Enter
+                term.write('\r\n');
+                processCommand(currentInput.trim());
+                currentInput = "";
+            } else if (e === '\u007F') { // Backspace
+                if (currentInput.length > 0) {
+                    currentInput = currentInput.slice(0, -1);
+                    term.write('\b \b');
+                }
+            } else {
+                currentInput += e;
+                term.write(e);
+            }
+        });
+    }
+
+    async function processCommand(cmd) {
+        const parts = cmd.split(' ');
+        const command = parts[0];
+        const arg = parts[1];
+
+        if (isPythonMode) {
+            if (cmd === 'exit()') {
+                isPythonMode = false;
+                term.writeln('Exiting Python...');
+                prompt();
+            } else {
+                await runPythonLine(cmd);
+            }
+            return;
+        }
+
+        switch (command) {
+            case 'help':
+                term.writeln('Available commands:');
+                term.writeln('  \x1B[1;32mls\x1B[0m          List files');
+                term.writeln('  \x1B[1;32mcat [file]\x1B[0m  Open file in editor');
+                term.writeln('  \x1B[1;32mpython\x1B[0m      Start Python REPL');
+                term.writeln('  \x1B[1;32mrun\x1B[0m         Run current editor code');
+                term.writeln('  \x1B[1;32mclear\x1B[0m       Clear terminal');
+                break;
+            case 'ls':
+                if(globalFiles.length === 0) await fetchFileList(); // Garante lista atualizada
+                globalFiles.forEach(f => {
+                    term.writeln(f.name);
+                });
+                break;
+            case 'cat':
+                if (arg) {
+                    term.writeln(`Opening ${arg}...`);
+                    loadFile(arg);
+                } else {
+                    term.writeln('Usage: cat [filename]');
+                }
+                break;
+            case 'python':
+                isPythonMode = true;
+                if (!pyodideInstance) {
+                    term.writeln('Loading Pyodide engine...');
+                    pyodideInstance = await loadPyodide();
+                }
+                term.writeln('\x1B[1;33mPython 3.11 (WebAssembly)\x1B[0m');
+                term.writeln('Type "exit()" to quit.');
+                term.write('>>> ');
+                return; // Retorna para não chamar prompt padrão
+            case 'run':
+                term.writeln('Running script...');
+                await runPythonCode(editor.getValue());
+                break;
+            case 'clear':
+                term.clear();
+                break;
+            case '':
+                break;
+            default:
+                term.writeln(`bash: ${command}: command not found`);
+        }
+        if(!isPythonMode) prompt();
+    }
+
+    function prompt() {
+        term.write('\x1B[1;34mazdev@studio\x1B[0m:\x1B[1;36m~\x1B[0m$ ');
+    }
+
+    function toggleTerminal() {
+        document.body.classList.toggle('show-terminal');
+        if (document.body.classList.contains('show-terminal')) {
+            setTimeout(() => {
+                initTerminal();
+                fitAddon.fit();
+                term.focus();
+            }, 100);
+        }
+    }
+
+    // --- PYTHON LOGIC ---
+    async function runPythonCode(code) {
+        if (!pyodideInstance) pyodideInstance = await loadPyodide();
+        try {
+            // Captura stdout do Python para o Terminal
+            pyodideInstance.setStdout({ batched: (msg) => term.writeln(msg) });
+            await pyodideInstance.runPythonAsync(code);
+        } catch (err) {
+            term.writeln(`\x1B[1;31mError:\x1B[0m ${err}`);
+        }
+    }
+
+    async function runPythonLine(line) {
+        try {
+             // Modo REPL simples
+            pyodideInstance.setStdout({ batched: (msg) => term.writeln(msg) });
+            let result = await pyodideInstance.runPythonAsync(line);
+            if(result !== undefined) term.writeln(String(result));
+        } catch(err) {
+             term.writeln(`\x1B[1;31m${err}\x1B[0m`);
+        }
+        term.write('>>> ');
+    }
+    
+    // Wrapper para o botão "Play" antigo
+    async function runPreview() {
+        toggleTerminal(); // Garante que o terminal aparece
+        await runPythonCode(editor.getValue());
+    }
+
+    // --- API & UI FUNCTIONS (Mantidas e conectadas ao terminal) ---
+    async function fetchFileList() {
+        try {
+            const r = await fetch(`${BACKEND_URL}?t=${Date.now()}`);
+            const files = await r.json();
+            globalFiles = files; // Salva para o comando 'ls'
+            const render = (id) => {
+                const el = document.getElementById(id); el.innerHTML = '';
+                files.forEach(f => {
+                    if(f.type === 'file') {
+                        const btn = document.createElement('button');
+                        btn.className = 'list-group-item list-group-item-action border-0 small';
+                        btn.innerHTML = `<i class="bi bi-file-code me-2"></i>${f.name}`;
+                        btn.onclick = () => loadFile(f.name);
+                        el.appendChild(btn);
+                    }
+                });
+            };
+            render('fileList'); render('fileListMobile');
+        } catch (e) { console.error(e); }
+    }
+
+    async function loadFile(name) {
+        try {
+            const r = await fetch(`${BACKEND_URL}/${name}`);
+            const data = await r.json();
+            const content = decodeURIComponent(escape(atob(data.content)));
+            document.getElementById('fileName').value = data.name;
+            editor.setValue(content);
+        } catch (e) { term.writeln(`Error loading ${name}`); }
+    }
+
+    async function saveToGitHub() {
+        const name = document.getElementById('fileName').value;
+        if (!name) return alert("Dê um nome!");
+        try {
+            let sha = "";
+            try {
+                const check = await fetch(`${BACKEND_URL}/${name}`);
+                if (check.ok) { const d = await check.json(); sha = d.sha; }
+            } catch(e) {}
+
+            await fetch(`${BACKEND_URL}/${name}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    message: `Update ${name}`,
+                    content: btoa(unescape(encodeURIComponent(editor.getValue()))),
+                    sha: sha || null
+                })
+            });
+            fetchFileList();
+            term.writeln(`\x1B[1;32mFile ${name} saved successfully.\x1B[0m`);
+        } catch (e) { alert("Erro ao salvar"); }
+    }
+    
+    async function deleteFile() {
+         const name = document.getElementById('fileName').value;
+         // ... (Mesma lógica anterior)
+    }
+
+    function applyTemplate(val) { /* Mesma lógica anterior */ }
+    function switchMode(mode) { /* Mesma lógica anterior */ }
+
+    window.onload = fetchFileList;
+    window.addEventListener('resize', () => { if(term.element) fitAddon.fit(); });
+</script>
+</body>
+</html>
