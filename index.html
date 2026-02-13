@@ -35,7 +35,7 @@
     <div class="row g-0 content-area">
         <div class="col-md-3 col-lg-2 bg-body-tertiary file-list-container p-3">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h6 class="m-0 text-muted">SEUS ARQUIVOS</h6>
+                <h6 class="m-0 text-muted">PASTA: /NOTES</h6>
                 <button class="btn btn-sm btn-outline-primary" onclick="fetchFileList()" title="Atualizar">
                     <i class="bi bi-arrow-clockwise"></i>
                 </button>
@@ -48,7 +48,7 @@
         <div class="col-md-9 col-lg-10 p-3 bg-body editor-container">
             <div class="input-group mb-3">
                 <span class="input-group-text"><i class="bi bi-file-earmark-text"></i></span>
-                <input type="text" id="fileName" class="form-control" placeholder="Nome do arquivo (ex: notas.md)">
+                <input type="text" id="fileName" class="form-control" placeholder="Nome do arquivo (ex: reuniao.md)">
                 
                 <button class="btn btn-success" onclick="saveToGitHub()" title="Salvar arquivo">
                     <i class="bi bi-cloud-upload me-1"></i> Salvar
@@ -72,10 +72,14 @@
 
 <script>
     // --- CONFIGURAÇÕES ---
-    const GITHUB_TOKEN = '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'; 
+    // Crie um novo token e cole abaixo (Mantenha as aspas)
+    const GITHUB_TOKEN = 'COLE_SEU_NOVO_TOKEN_AQUI'; 
+    
     const REPO_OWNER = 'azdevcoder';
     const REPO_NAME = 'azdevcoder_notes';
-    const PATH = 'notes';
+    const PATH = 'notes'; // Pasta onde os arquivos ficam
+
+    // URL CORRIGIDA: aponta para dentro da pasta 'notes'
     const BASE_URL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${PATH}`;
 
     function setStatus(msg, type = 'secondary') {
@@ -90,40 +94,54 @@
         const listElement = document.getElementById('fileList');
         
         try {
-            const response = await fetch(`${BASE_URL}?t=${new Date().getTime()}`, { // Anti-cache
+            const response = await fetch(`${BASE_URL}?t=${new Date().getTime()}`, { 
                 headers: { "Authorization": `token ${GITHUB_TOKEN}` }
             });
             
-            if (!response.ok) throw new Error("Falha na conexão");
+            if (!response.ok) throw new Error("Falha na conexão (Verifique Token/Repo)");
 
             const files = await response.json();
             listElement.innerHTML = '';
+
+            // Se a pasta estiver vazia ou não existir
+            if (!Array.isArray(files)) {
+                listElement.innerHTML = '<div class="text-muted small">Nenhum arquivo encontrado.</div>';
+                setStatus("Pasta vazia", "secondary");
+                return;
+            }
 
             files.forEach(file => {
                 if(file.type === 'file') {
                     const btn = document.createElement('button');
                     btn.className = 'list-group-item list-group-item-action py-2 border-0';
                     btn.innerHTML = `<i class="bi bi-file-text me-2"></i> ${file.name}`;
-                    btn.onclick = () => loadFile(file.path);
+                    
+                    // CORREÇÃO CRÍTICA: Passamos apenas o nome do arquivo, não o path completo
+                    // pois a BASE_URL já inclui a pasta "notes"
+                    btn.onclick = () => loadFile(file.name);
+                    
                     listElement.appendChild(btn);
                 }
             });
             setStatus("Pronto", "success");
         } catch (err) {
             console.error(err);
-            listElement.innerHTML = '<div class="text-danger small">Erro ao carregar. Verifique o Token.</div>';
+            listElement.innerHTML = '<div class="text-danger small">Erro. Verifique Console.</div>';
             setStatus("Erro", "danger");
         }
     }
 
     // 2. CARREGAR ARQUIVO
-    async function loadFile(path) {
+    async function loadFile(fileName) {
         setStatus("Baixando...", "info");
         try {
-            const url = `${BASE_URL}/${path}?t=${new Date().getTime()}`;
+            const url = `${BASE_URL}/${fileName}?t=${new Date().getTime()}`;
             const response = await fetch(url, {
                 headers: { "Authorization": `token ${GITHUB_TOKEN}` }
             });
+            
+            if(!response.ok) throw new Error("Arquivo não encontrado");
+
             const data = await response.json();
             
             // Decodifica UTF-8 corretamente
@@ -131,8 +149,9 @@
             
             document.getElementById('fileName').value = data.name;
             document.getElementById('content').value = decodedContent;
-            setStatus("Arquivo carregado", "primary");
+            setStatus("Carregado", "primary");
         } catch (err) {
+            console.error(err);
             setStatus("Erro ao abrir", "danger");
         }
     }
@@ -148,6 +167,7 @@
 
         try {
             let sha = "";
+            // Verifica se arquivo existe na pasta notes para pegar o SHA
             const checkFile = await fetch(`${BASE_URL}/${fileName}`, {
                 headers: { "Authorization": `token ${GITHUB_TOKEN}` }
             });
@@ -165,51 +185,53 @@
                 },
                 body: JSON.stringify({
                     message: `Update via WebApp: ${fileName}`,
+                    // Encodifica UTF-8 para Base64
                     content: btoa(unescape(encodeURIComponent(content))),
                     sha: sha || null
                 })
             });
 
             if (response.ok) {
-                setStatus("Salvo com sucesso!", "success");
-                if (!sha) fetchFileList(); // Atualiza lista se for novo
+                setStatus("Salvo!", "success");
+                // Se era um arquivo novo (sem SHA), atualiza a lista
+                if (!sha) fetchFileList(); 
             } else {
                 const err = await response.json();
                 setStatus("Erro ao salvar", "danger");
-                alert("Erro: " + (err.message || "Desconhecido"));
+                alert("Erro GitHub: " + (err.message || "Desconhecido"));
             }
         } catch (err) {
+            console.error(err);
             setStatus("Erro de conexão", "danger");
         }
     }
 
-    // 4. EXCLUIR ARQUIVO (NOVA FUNÇÃO)
+    // 4. EXCLUIR ARQUIVO
     async function deleteFile() {
         const fileName = document.getElementById('fileName').value;
         
         if (!fileName) return alert("Selecione um arquivo para excluir.");
 
-        if (!confirm(`Tem certeza que deseja EXCLUIR PERMANENTEMENTE o arquivo: "${fileName}"?`)) {
+        if (!confirm(`Tem certeza que deseja EXCLUIR PERMANENTEMENTE "${fileName}"?`)) {
             return;
         }
 
         setStatus("Excluindo...", "danger");
 
         try {
-            // 1. Precisamos do SHA atual para autorizar a exclusão
+            // Busca SHA para autorizar exclusão
             const checkFile = await fetch(`${BASE_URL}/${fileName}`, {
                 headers: { "Authorization": `token ${GITHUB_TOKEN}` }
             });
 
             if (!checkFile.ok) {
-                setStatus("Arquivo não encontrado", "warning");
+                setStatus("404 Não encontrado", "warning");
                 return alert("Arquivo não existe no repositório.");
             }
 
             const fileData = await checkFile.json();
             const sha = fileData.sha;
 
-            // 2. Enviar pedido de DELETE
             const response = await fetch(`${BASE_URL}/${fileName}`, {
                 method: "DELETE",
                 headers: {
@@ -223,18 +245,14 @@
             });
 
             if (response.ok) {
-                setStatus("Excluído com sucesso!", "success");
-                
-                // Limpar campos
+                setStatus("Excluído", "success");
                 document.getElementById('fileName').value = "";
                 document.getElementById('content').value = "";
-                
-                // Atualizar lista
                 fetchFileList();
             } else {
                 const err = await response.json();
                 setStatus("Erro ao excluir", "danger");
-                alert("Erro: " + err.message);
+                alert("Erro GitHub: " + err.message);
             }
         } catch (err) {
             console.error(err);
@@ -248,8 +266,3 @@
 
 </body>
 </html>
-
-
-
-
-
