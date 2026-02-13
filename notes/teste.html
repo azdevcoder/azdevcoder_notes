@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-br" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AzDev Studio - Auto Templates</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/theme/dracula.min.css">
+
+    <style>
+        /* LAYOUT FIXO */
+        body, html { height: 100%; margin: 0; overflow: hidden; background: #0d1117; color: #c9d1d9; font-family: 'Segoe UI', sans-serif; }
+        .app-container { height: 100vh; display: flex; flex-direction: column; }
+        
+        .fixed-header { flex-shrink: 0; z-index: 1000; background: #161b22; border-bottom: 1px solid #30363d; }
+        .main-workspace { flex-grow: 1; display: flex; overflow: hidden; position: relative; }
+        .sidebar { width: 250px; background: #0d1117; border-right: 1px solid #30363d; display: flex; flex-direction: column; }
+        .editor-area { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+        
+        .editor-wrapper { flex-grow: 1; position: relative; overflow: hidden; }
+        .CodeMirror { height: 100% !important; font-family: 'Fira Code', monospace; font-size: 14px; background: #0d1117; }
+        
+        /* Painel de Saída */
+        #output-panel { 
+            height: 30%; background: #000; border-top: 1px solid #30363d; 
+            display: none; flex-direction: column; font-family: 'Fira Code', monospace;
+        }
+        .show-output #output-panel { display: flex; }
+        .show-output .editor-wrapper { height: 70%; }
+        
+        #output-content { flex-grow: 1; overflow-y: auto; padding: 15px; color: #00ff00; white-space: pre-wrap; margin: 0; font-size: 13px; }
+        
+        /* Ajuste do Input Group */
+        .file-input-group { max-width: 400px; }
+        .form-select-sm { width: 85px; flex: none; border-left: 0; cursor: pointer; }
+
+        @media (max-width: 768px) { .sidebar { display: none; } }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <nav class="navbar navbar-expand-lg fixed-header px-3 py-2">
+        <span class="navbar-brand mb-0 h1 text-white fs-6"><i class="bi bi-code-square me-2 text-primary"></i>AzDev Studio</span>
+        <div class="ms-auto d-flex gap-2">
+            <button class="btn btn-sm btn-outline-warning" onclick="runPreviewHTML()"><i class="bi bi-eye"></i> Preview</button>
+            <button class="btn btn-sm btn-success fw-bold px-3" onclick="runPython()"><i class="bi bi-play-fill"></i> EXECUTAR</button>
+        </div>
+    </nav>
+
+    <div class="main-workspace">
+        <div class="sidebar">
+            <div class="p-2 border-bottom border-secondary d-flex justify-content-between align-items-center">
+                <small class="fw-bold text-muted ps-2">ARQUIVOS</small>
+                <div class="d-flex gap-1">
+                     <button class="btn btn-link btn-sm text-success" onclick="newFile()" title="Novo Arquivo"><i class="bi bi-plus-lg"></i></button>
+                     <button class="btn btn-link btn-sm text-secondary" onclick="fetchFileList()"><i class="bi bi-arrow-clockwise"></i></button>
+                </div>
+            </div>
+            <div class="list-group list-group-flush overflow-auto" id="fileList"></div>
+        </div>
+
+        <div class="editor-area">
+            <div class="d-flex align-items-center gap-2 p-2 bg-dark border-bottom border-secondary fixed-header">
+                
+                <div class="input-group input-group-sm file-input-group">
+                    <input type="text" id="fileName" class="form-control bg-dark text-white border-secondary" placeholder="nome_arquivo">
+                    <select class="form-select bg-dark text-white border-secondary" id="fileExt" onchange="changeMode()">
+                        <option value=".py" selected>.py</option>
+                        <option value=".html">.html</option>
+                        <option value=".css">.css</option>
+                        <option value=".js">.js</option>
+                        <option value=".txt">.txt</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-sm btn-primary" onclick="saveToGitHub()" title="Salvar"><i class="bi bi-cloud-arrow-up"></i></button>
+                <button class="btn btn-sm btn-danger" onclick="deleteFile()" title="Excluir"><i class="bi bi-trash"></i></button>
+                <span id="status" class="badge bg-secondary ms-auto">Pronto</span>
+            </div>
+
+            <div class="editor-wrapper">
+                <textarea id="code-editor"></textarea>
+            </div>
+
+            <div id="output-panel">
+                <div class="d-flex justify-content-between align-items-center bg-dark px-2 py-1 border-bottom border-secondary" style="height: 30px;">
+                    <small class="text-secondary">CONSOLE</small>
+                    <div>
+                        <button class="btn btn-link btn-sm text-secondary p-0 me-2" onclick="clearOutput()"><i class="bi bi-eraser"></i></button>
+                        <button class="btn btn-link btn-sm text-secondary p-0" onclick="toggleOutput()"><i class="bi bi-x-lg"></i></button>
+                    </div>
+                </div>
+                <pre id="output-content"></pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/htmlmixed/htmlmixed.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/xml/xml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/css/css.min.js"></script>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
+
+<script>
+    const BACKEND_URL = "https://azdevcoder-notes.onrender.com/api/notes";
+    let pyodideInstance = null;
+
+    const editor = CodeMirror.fromTextArea(document.getElementById("code-editor"), {
+        lineNumbers: true, theme: "dracula", mode: "python", indentUnit: 4
+    });
+
+    // --- TEMPLATES (O PREENCHIMENTO AUTOMÁTICO) ---
+    const templates = {
+        '.py': `import sys\n\ndef main():\n    print("Olá, AzDev! Python rodando.")\n\nif __name__ == "__main__":\n    main()`,
+        '.html': `<!DOCTYPE html>\n<html lang="pt-br">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <title>Novo Projeto</title>\n    <style>\n        body { font-family: sans-serif; padding: 20px; }\n    </style>\n</head>\n<body>\n    <h1>Olá Mundo</h1>\n    <p>Projeto criado com AzDev Studio.</p>\n    <script>\n        console.log("Olá do console");\n    <\/script>\n</body>\n</html>`,
+        '.css': `body {\n    background-color: #1e1e1e;\n    color: #ffffff;\n    font-family: 'Segoe UI', sans-serif;\n}\n\nh1 {\n    color: #61dafb;\n}`,
+        '.js': `console.log("Sistema iniciado...");\n\ndocument.addEventListener('DOMContentLoaded', () => {\n    // Seu código aqui\n    alert("JS Carregado!");\n});`,
+        '.txt': `Minhas anotações:\n- `
+    };
+
+    // --- FUNÇÃO DE TROCA DE MODO E TEMPLATE ---
+    function changeMode() {
+        const ext = document.getElementById('fileExt').value;
+        
+        // 1. Muda as cores (Syntax Highlighting)
+        const modes = {
+            '.py': 'python',
+            '.js': 'javascript',
+            '.html': 'htmlmixed',
+            '.css': 'css',
+            '.txt': 'null'
+        };
+        editor.setOption("mode", modes[ext] || 'null');
+
+        // 2. Aplica Template APENAS SE ESTIVER VAZIO
+        // Isso evita apagar o código que você já escreveu
+        if (editor.getValue().trim() === "") {
+            if (templates[ext]) {
+                editor.setValue(templates[ext]);
+            }
+        }
+    }
+
+    // --- FUNÇÃO NOVO ARQUIVO ---
+    function newFile() {
+        if(editor.getValue().trim() !== "" && !confirm("Limpar editor para novo arquivo?")) return;
+        
+        document.getElementById('fileName').value = "";
+        editor.setValue(""); // Limpa
+        changeMode(); // Aplica o template da extensão atual
+    }
+
+    // --- OUTRAS FUNÇÕES DO SISTEMA ---
+
+    function getFullFileName() {
+        let name = document.getElementById('fileName').value.trim();
+        const ext = document.getElementById('fileExt').value;
+        if (!name) return null;
+        if (name.endsWith(ext)) name = name.substring(0, name.length - ext.length);
+        name = name.replace(/\.(py|html|css|js|txt)$/, "");
+        return name + ext;
+    }
+
+    async function runPython() {
+        showOutputPanel(true);
+        const outputBox = document.getElementById("output-content");
+        outputBox.innerHTML = "<span class='text-warning'>Carregando Python...</span>";
+
+        try {
+            if (!pyodideInstance) pyodideInstance = await loadPyodide();
+            outputBox.innerHTML = "<span class='text-info'>--- Iniciando ---</span>\n";
+            await pyodideInstance.runPythonAsync(`import sys; import io; sys.stdout = io.StringIO()`);
+            await pyodideInstance.runPythonAsync(editor.getValue());
+            const stdout = pyodideInstance.runPython("sys.stdout.getvalue()");
+            outputBox.innerText = stdout || "(Sem saída)";
+        } catch (err) {
+            outputBox.innerHTML = `<span class="text-danger">Erro:\n${err}</span>`;
+        }
+    }
+
+    function runPreviewHTML() {
+        const win = window.open("", "Preview", "width=800,height=600");
+        win.document.write(editor.getValue());
+        win.document.close();
+    }
+
+    async function fetchFileList() {
+        const list = document.getElementById('fileList');
+        try {
+            const r = await fetch(`${BACKEND_URL}?t=${Date.now()}`);
+            const files = await r.json();
+            list.innerHTML = '';
+            files.forEach(f => {
+                if(f.type === 'file') {
+                    const btn = document.createElement('button');
+                    btn.className = 'list-group-item list-group-item-action bg-transparent text-white border-bottom border-secondary small';
+                    
+                    let icon = 'bi-file-earmark';
+                    if (f.name.endsWith('.py')) icon = 'bi-filetype-py';
+                    if (f.name.endsWith('.html')) icon = 'bi-filetype-html';
+                    if (f.name.endsWith('.js')) icon = 'bi-filetype-js';
+                    if (f.name.endsWith('.css')) icon = 'bi-filetype-css';
+                    
+                    btn.innerHTML = `<i class="bi ${icon} me-2"></i>${f.name}`;
+                    btn.onclick = () => loadFile(f.name);
+                    list.appendChild(btn);
+                }
+            });
+        } catch (e) { console.error(e); }
+    }
+
+    async function loadFile(fullName) {
+        try {
+            const r = await fetch(`${BACKEND_URL}/${fullName}`);
+            const data = await r.json();
+            const content = decodeURIComponent(escape(atob(data.content)));
+            
+            const extMatch = fullName.match(/\.(py|html|css|js|txt)$/);
+            
+            if (extMatch) {
+                const ext = extMatch[0];
+                document.getElementById('fileName').value = fullName.replace(ext, '');
+                document.getElementById('fileExt').value = ext;
+            } else {
+                document.getElementById('fileName').value = fullName;
+                document.getElementById('fileExt').value = '.txt';
+            }
+            
+            // Aqui definimos o conteúdo ANTES de mudar o modo
+            // Para garantir que o template não sobrescreva o arquivo carregado
+            editor.setValue(content);
+            
+            // Agora ajustamos apenas as cores, sem o template
+            const ext = document.getElementById('fileExt').value;
+            const modes = { '.py': 'python', '.js': 'javascript', '.html': 'htmlmixed', '.css': 'css', '.txt': 'null' };
+            editor.setOption("mode", modes[ext] || 'null');
+
+        } catch (e) { alert("Erro ao abrir"); }
+    }
+
+    async function saveToGitHub() {
+        const finalName = getFullFileName();
+        if (!finalName) return alert("Digite um nome!");
+        
+        setStatus("Salvando...", "warning");
+        try {
+            let sha = "";
+            try {
+                const check = await fetch(`${BACKEND_URL}/${finalName}`);
+                if(check.ok) { const d = await check.json(); sha = d.sha; }
+            } catch(e){}
+
+            await fetch(`${BACKEND_URL}/${finalName}`, {
+                method: "PUT",
+                headers: {"Content-Type":"application/json"},
+                body: JSON.stringify({
+                    message: "Update via Studio",
+                    content: btoa(unescape(encodeURIComponent(editor.getValue()))),
+                    sha: sha || null
+                })
+            });
+            setStatus("Salvo!", "success");
+            fetchFileList();
+        } catch(e) { setStatus("Erro", "danger"); }
+    }
+
+    async function deleteFile() {
+        const finalName = getFullFileName();
+        if(!finalName || !confirm(`Excluir ${finalName}?`)) return;
+        try {
+            const check = await fetch(`${BACKEND_URL}/${finalName}`);
+            const d = await check.json();
+            await fetch(`${BACKEND_URL}/${finalName}`, {
+                method: "DELETE",
+                headers: {"Content-Type":"application/json"},
+                body: JSON.stringify({ message: "Delete", sha: d.sha })
+            });
+            document.getElementById('fileName').value = ""; editor.setValue(""); fetchFileList();
+        } catch(e) { setStatus("Erro", "danger"); }
+    }
+
+    function toggleOutput() { document.body.classList.toggle('show-output'); }
+    function showOutputPanel(show) { 
+        if(show) document.body.classList.add('show-output');
+        else document.body.classList.remove('show-output');
+    }
+    function clearOutput() { document.getElementById('output-content').innerText = ""; }
+    function setStatus(msg, type) { const el = document.getElementById('status'); el.innerText = msg; el.className = `badge bg-${type} ms-auto`; }
+
+    // Ao iniciar, já aplica o template padrão (Python)
+    window.onload = () => {
+        fetchFileList();
+        changeMode(); 
+    };
+</script>
+
+</body>
+</html>
