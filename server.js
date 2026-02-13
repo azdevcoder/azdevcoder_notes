@@ -13,29 +13,31 @@ const REPO_NAME = 'azdevcoder_notes';
 const PATH = 'notes';
 const BASE_URL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${PATH}`;
 
-// Configuração padrão do cabeçalho
-const headers = {
-    "Authorization": `token ${GITHUB_TOKEN}`,
-    "Content-Type": "application/json"
-};
-
-// Rota para listar e salvar (Proxy)
 app.all('/api/notes*', async (req, res) => {
-    const subPath = req.params[0] || ""; // Pega o nome do arquivo se houver
-    const url = `${BASE_URL}${subPath}${req.url.includes('?t=') ? req.url.substring(req.url.indexOf('?t=')) : ''}`;
+    // Pega o que vem depois de /api/notes (ex: /arquivo.md)
+    const subPath = req.params[0] || ""; 
+    const url = `${BASE_URL}${subPath}`;
 
     try {
         const response = await axios({
             method: req.method,
             url: url,
             data: req.body,
-            headers: headers
+            headers: {
+                "Authorization": `token ${GITHUB_TOKEN}`,
+                "Content-Type": "application/json",
+                "Accept": "application/vnd.github.v3+json"
+            }
         });
         res.status(response.status).json(response.data);
     } catch (error) {
-        res.status(error.response?.status || 500).json(error.response?.data || {error: "Erro no servidor"});
+        // ESSA É A PARTE QUE ESTAVA FALTANDO OU INCOMPLETA:
+        console.error("Erro na requisição:", error.response?.data || error.message);
+        res.status(error.response?.status || 500).json(
+            error.response?.data || { error: "Erro interno no proxy" }
+        );
     }
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Servidor AzDev Coder rodando na porta ${PORT}`));
+app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
