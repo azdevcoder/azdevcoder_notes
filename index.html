@@ -3,50 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AzDev Studio</title>
+    <title>AzDev Studio - Simple Run</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/codemirror.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/theme/dracula.min.css">
-    
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.3.0/css/xterm.min.css">
 
     <style>
-        /* --- LAYOUT FIXO --- */
+        /* LAYOUT FIXO (App Style) */
         body, html { height: 100%; margin: 0; overflow: hidden; background: #0d1117; color: #c9d1d9; font-family: 'Segoe UI', sans-serif; }
         .app-container { height: 100vh; display: flex; flex-direction: column; }
         
-        /* Cabeçalho Fixo */
+        /* Cabeçalho */
         .fixed-header { flex-shrink: 0; z-index: 1000; background: #161b22; border-bottom: 1px solid #30363d; }
         
-        /* Área Principal */
+        /* Corpo Principal */
         .main-workspace { flex-grow: 1; display: flex; overflow: hidden; position: relative; }
+        
+        /* Sidebar */
         .sidebar { width: 250px; background: #0d1117; border-right: 1px solid #30363d; display: flex; flex-direction: column; }
+        
+        /* Área Central */
         .editor-area { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
         
-        /* Editores */
+        /* Editor CodeMirror */
         .editor-wrapper { flex-grow: 1; position: relative; overflow: hidden; }
         .CodeMirror { height: 100% !important; font-family: 'Fira Code', monospace; font-size: 14px; background: #0d1117; }
         
-        /* Terminal Container */
-        #terminal-panel { 
-            height: 35%; 
+        /* Painel de Saída (Output) */
+        #output-panel { 
+            height: 30%; 
             background: #000; 
             border-top: 1px solid #30363d; 
             display: none; 
             flex-direction: column; 
+            font-family: 'Fira Code', monospace;
         }
-        .show-terminal #terminal-panel { display: flex; }
-        .show-terminal .editor-wrapper { height: 65%; }
+        .show-output #output-panel { display: flex; }
+        .show-output .editor-wrapper { height: 70%; } /* Editor diminui quando output abre */
         
-        #xterm-container { flex-grow: 1; overflow: hidden; padding: 4px; }
+        #output-content { 
+            flex-grow: 1; 
+            overflow-y: auto; 
+            padding: 15px; 
+            color: #00ff00; 
+            white-space: pre-wrap; /* Mantém formatação do print */
+            margin: 0;
+            font-size: 13px;
+        }
 
-        /* Utilitários */
-        .btn-icon { background: none; border: none; color: #8b949e; }
-        .btn-icon:hover { color: #58a6ff; }
-        
         @media (max-width: 768px) { .sidebar { display: none; } }
     </style>
 </head>
@@ -54,46 +61,45 @@
 
 <div class="app-container">
     <nav class="navbar navbar-expand-lg fixed-header px-3 py-2">
-        <button class="btn btn-icon d-md-none me-2" onclick="toggleSidebar()"><i class="bi bi-list fs-5"></i></button>
         <span class="navbar-brand mb-0 h1 text-white fs-6"><i class="bi bi-code-square me-2 text-primary"></i>AzDev Studio</span>
         
         <div class="ms-auto d-flex gap-2">
-            <button class="btn btn-sm btn-outline-success" onclick="runPythonScript()" title="Rodar Script"><i class="bi bi-play-fill"></i> Run</button>
-            <button class="btn btn-sm btn-outline-secondary" onclick="toggleTerminal()" title="Abrir Terminal"><i class="bi bi-terminal"></i> Term</button>
+            <button class="btn btn-sm btn-outline-warning" onclick="runPreviewHTML()" title="Visualizar HTML"><i class="bi bi-eye"></i> Preview</button>
+            <button class="btn btn-sm btn-success fw-bold px-3" onclick="runPython()"><i class="bi bi-play-fill"></i> EXECUTAR PYTHON</button>
         </div>
     </nav>
 
     <div class="main-workspace">
-        
-        <div class="sidebar" id="sidebar">
+        <div class="sidebar">
             <div class="p-2 border-bottom border-secondary d-flex justify-content-between align-items-center">
-                <small class="fw-bold text-muted ps-2">EXPLORER</small>
-                <button class="btn btn-icon btn-sm" onclick="fetchFileList()"><i class="bi bi-arrow-clockwise"></i></button>
+                <small class="fw-bold text-muted ps-2">ARQUIVOS</small>
+                <button class="btn btn-link btn-sm text-secondary" onclick="fetchFileList()"><i class="bi bi-arrow-clockwise"></i></button>
             </div>
             <div class="list-group list-group-flush overflow-auto" id="fileList"></div>
         </div>
 
         <div class="editor-area">
-            
             <div class="d-flex align-items-center gap-2 p-2 bg-dark border-bottom border-secondary fixed-header">
-                <input type="text" id="fileName" class="form-control form-control-sm bg-dark text-white border-secondary" placeholder="script.py" style="max-width: 200px;">
-                <button class="btn btn-sm btn-primary" onclick="saveFile()"><i class="bi bi-save"></i></button>
-                <button class="btn btn-sm btn-danger" onclick="deleteFile()"><i class="bi bi-trash"></i></button>
-                <span id="status" class="badge bg-secondary ms-auto">Ready</span>
+                <input type="text" id="fileName" class="form-control form-control-sm bg-dark text-white border-secondary" placeholder="script.py" style="max-width: 250px;">
+                <button class="btn btn-sm btn-primary" onclick="saveToGitHub()" title="Salvar"><i class="bi bi-cloud-arrow-up"></i></button>
+                <button class="btn btn-sm btn-danger" onclick="deleteFile()" title="Excluir"><i class="bi bi-trash"></i></button>
+                <span id="status" class="badge bg-secondary ms-auto">Pronto</span>
             </div>
 
             <div class="editor-wrapper">
                 <textarea id="code-editor"></textarea>
             </div>
 
-            <div id="terminal-panel">
+            <div id="output-panel">
                 <div class="d-flex justify-content-between align-items-center bg-dark px-2 py-1 border-bottom border-secondary" style="height: 30px;">
-                    <small class="text-white-50 font-monospace">BASH (Emulated)</small>
-                    <button class="btn btn-icon btn-sm py-0" onclick="toggleTerminal()"><i class="bi bi-x-lg"></i></button>
+                    <small class="text-secondary">CONSOLE DE SAÍDA</small>
+                    <div>
+                        <button class="btn btn-link btn-sm text-secondary p-0 me-2" onclick="clearOutput()" title="Limpar"><i class="bi bi-eraser"></i></button>
+                        <button class="btn btn-link btn-sm text-secondary p-0" onclick="toggleOutput()"><i class="bi bi-x-lg"></i></button>
+                    </div>
                 </div>
-                <div id="xterm-container"></div>
+                <pre id="output-content">O resultado do seu código aparecerá aqui...</pre>
             </div>
-
         </div>
     </div>
 </div>
@@ -101,215 +107,88 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/codemirror.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/python/python.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/htmlmixed/htmlmixed.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/xml/xml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.12/mode/css/css.min.js"></script>
 <script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.3.0/lib/xterm.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@xterm/addon-fit@0.8.0/lib/addon-fit.min.js"></script>
 
 <script>
-    // --- CONFIGURAÇÃO ---
     const BACKEND_URL = "https://azdevcoder-notes.onrender.com/api/notes";
-    let globalFiles = [];
-    let pyodide = null;
-    let term = null;
-    let fitAddon = null;
-    
-    // Estado do Terminal
-    let inputBuffer = "";
-    let isPythonMode = false;
+    let pyodideInstance = null;
 
-    // --- EDITOR ---
+    // 1. Configuração do Editor
     const editor = CodeMirror.fromTextArea(document.getElementById("code-editor"), {
-        lineNumbers: true, theme: "dracula", mode: "python"
+        lineNumbers: true, 
+        theme: "dracula", 
+        mode: "python",
+        indentUnit: 4
     });
 
-    // --- TERMINAL LOGIC (CORRIGIDA) ---
-    function initTerminal() {
-        if (term) return; // Evita duplicar
+    // 2. Função: EXECUTAR PYTHON (Simples e Direta)
+    async function runPython() {
+        showOutputPanel(true);
+        const outputBox = document.getElementById("output-content");
+        outputBox.innerHTML = "<span class='text-warning'>Inicializando Python...</span>";
 
-        term = new Terminal({
-            cursorBlink: true,
-            fontSize: 14,
-            fontFamily: '"Fira Code", monospace',
-            theme: { background: '#000000', foreground: '#00ff00' }
-        });
-        
-        fitAddon = new FitAddon.FitAddon();
-        term.loadAddon(fitAddon);
-        term.open(document.getElementById('xterm-container'));
-        fitAddon.fit();
-
-        term.writeln('\x1B[1;34mWelcome to AzDev Terminal v2.1\x1B[0m');
-        term.writeln('Type \x1B[1;33mhelp\x1B[0m to list commands.');
-        prompt();
-
-        // O SEGREDO DO FUNCIONAMENTO ESTÁ AQUI:
-        term.onData(e => {
-            switch (e) {
-                case '\r': // Enter
-                    term.write('\r\n');
-                    executeCommand(inputBuffer);
-                    inputBuffer = "";
-                    break;
-                case '\u007F': // Backspace
-                    if (inputBuffer.length > 0) {
-                        inputBuffer = inputBuffer.slice(0, -1);
-                        term.write('\b \b'); // Apaga visualmente
-                    }
-                    break;
-                default: // Caracteres normais
-                    // Filtra caracteres estranhos (opcional)
-                    if (e >= String.fromCharCode(0x20) && e <= String.fromCharCode(0x7E)) {
-                        inputBuffer += e;
-                        term.write(e); // ECHO: Escreve o que o usuário digita
-                    }
+        try {
+            // Carrega Pyodide se necessário
+            if (!pyodideInstance) {
+                pyodideInstance = await loadPyodide();
             }
-        });
-    }
 
-    function prompt() {
-        if (isPythonMode) {
-            term.write('>>> ');
-        } else {
-            term.write('\r\n\x1B[1;32mazdev@linux\x1B[0m:\x1B[1;34m~\x1B[0m$ ');
+            outputBox.innerHTML = "<span class='text-info'>--- Executando ---</span>\n";
+
+            // Redireciona o stdout (print) para uma string
+            await pyodideInstance.runPythonAsync(`
+                import sys
+                import io
+                sys.stdout = io.StringIO()
+            `);
+
+            // Executa o código do usuário
+            await pyodideInstance.runPythonAsync(editor.getValue());
+
+            // Pega o que foi printado
+            const stdout = pyodideInstance.runPython("sys.stdout.getvalue()");
+            
+            outputBox.innerText = stdout || "(Código executado sem saída visível)";
+            
+        } catch (err) {
+            outputBox.innerHTML = `<span class="text-danger">Erro:\n${err}</span>`;
         }
     }
 
-    async function executeCommand(cmd) {
-        cmd = cmd.trim();
-        if (!cmd) { prompt(); return; }
-
-        // --- MODO PYTHON ---
-        if (isPythonMode) {
-            if (cmd === 'exit()') {
-                isPythonMode = false;
-                term.writeln('Exiting Python...');
-                prompt();
-            } else {
-                await runPythonLine(cmd);
-            }
-            return;
-        }
-
-        // --- MODO BASH ---
-        const parts = cmd.split(' ');
-        const command = parts[0];
-        const arg = parts[1];
-
-        switch (command) {
-            case 'help':
-                term.writeln('Commands: ls, cat [file], rm [file], python, clear');
-                break;
-            case 'clear':
-                term.clear();
-                break;
-            case 'ls':
-                if (globalFiles.length === 0) await fetchFileList();
-                globalFiles.forEach(f => term.writeln('  ' + f.name));
-                break;
-            case 'cat':
-                if (!arg) term.writeln('Usage: cat filename');
-                else {
-                    term.writeln(`Loading ${arg}...`);
-                    loadFile(arg);
-                }
-                break;
-            case 'rm': // Delete simulado via comando
-                if (!arg) term.writeln('Usage: rm filename');
-                else {
-                    document.getElementById('fileName').value = arg;
-                    await deleteFile();
-                    term.writeln(`File ${arg} deleted.`);
-                }
-                break;
-            case 'python':
-                term.writeln('Starting Python Environment (Pyodide)...');
-                if (!pyodide) await loadPyodideEngine();
-                isPythonMode = true;
-                term.writeln('\x1B[1;33mPython 3.11 Ready.\x1B[0m Type exit() to quit.');
-                break;
-            default:
-                term.writeln(`Command not found: ${command}`);
-        }
-        
-        if (!isPythonMode) prompt();
+    // 3. Função: PREVIEW HTML
+    function runPreviewHTML() {
+        const code = editor.getValue();
+        const win = window.open("", "Preview", "width=800,height=600");
+        win.document.write(code);
+        win.document.close();
     }
 
-    // --- PYTHON ENGINE ---
-    async function loadPyodideEngine() {
-        try {
-            pyodide = await loadPyodide();
-            // Redireciona o print() do Python para o Xterm
-            pyodide.setStdout({ batched: (msg) => {
-                term.writeln(msg);
-            }});
-        } catch (e) {
-            term.writeln(`Error loading Python: ${e}`);
-        }
-    }
-
-    async function runPythonLine(code) {
-        try {
-            // Executa linha a linha
-            let result = await pyodide.runPythonAsync(code);
-            if (result !== undefined) term.writeln(String(result));
-        } catch (e) {
-            term.writeln(`\x1B[1;31m${e}\x1B[0m`);
-        }
-        term.write('>>> '); // Prompt python
-    }
-
-    async function runPythonScript() {
-        toggleTerminal(true);
-        term.writeln('\x1B[1;36m--- Running Script ---\x1B[0m');
-        
-        if (!pyodide) {
-            term.writeln('Loading engine...');
-            await loadPyodideEngine();
-        }
-
-        try {
-            const code = editor.getValue();
-            await pyodide.runPythonAsync(code);
-        } catch (e) {
-            term.writeln(`\x1B[1;31mRuntime Error:\x1B[0m ${e}`);
-        }
-        term.writeln('\x1B[1;36m--- End ---\x1B[0m');
-        prompt();
-    }
-
-    // --- UI & API ---
-    function toggleTerminal(forceOpen = false) {
-        const body = document.body;
-        if (forceOpen) body.classList.add('show-terminal');
-        else body.classList.toggle('show-terminal');
-        
-        if (body.classList.contains('show-terminal')) {
-            setTimeout(() => {
-                initTerminal(); // Inicia se for a primeira vez
-                fitAddon.fit();
-                term.focus();
-            }, 100);
-        }
-    }
-
+    // 4. Integração com GitHub (Mantida)
     async function fetchFileList() {
+        const list = document.getElementById('fileList');
         try {
             const r = await fetch(`${BACKEND_URL}?t=${Date.now()}`);
             const files = await r.json();
-            globalFiles = files; // Cache para o terminal
-            
-            const list = document.getElementById('fileList');
             list.innerHTML = '';
             files.forEach(f => {
-                if (f.type === 'file') {
-                    const item = document.createElement('button');
-                    item.className = 'list-group-item list-group-item-action bg-transparent text-white border-bottom border-secondary small';
-                    item.innerHTML = `<i class="bi bi-file-earmark me-2"></i>${f.name}`;
-                    item.onclick = () => loadFile(f.name);
-                    list.appendChild(item);
+                if(f.type === 'file') {
+                    const btn = document.createElement('button');
+                    btn.className = 'list-group-item list-group-item-action bg-transparent text-white border-bottom border-secondary small';
+                    
+                    // Ícones simples
+                    let icon = 'bi-file-earmark';
+                    if (f.name.endsWith('.py')) icon = 'bi-filetype-py';
+                    if (f.name.endsWith('.html')) icon = 'bi-filetype-html';
+                    
+                    btn.innerHTML = `<i class="bi ${icon} me-2"></i>${f.name}`;
+                    btn.onclick = () => loadFile(f.name);
+                    list.appendChild(btn);
                 }
             });
-        } catch (e) { alert("Erro ao listar arquivos"); }
+        } catch (e) { console.error(e); }
     }
 
     async function loadFile(name) {
@@ -317,18 +196,23 @@
             const r = await fetch(`${BACKEND_URL}/${name}`);
             const data = await r.json();
             const content = decodeURIComponent(escape(atob(data.content)));
+            
             document.getElementById('fileName').value = data.name;
             editor.setValue(content);
-        } catch (e) { alert("Erro ao abrir arquivo"); }
+            
+            // Ajusta highlight do editor baseado na extensão
+            if(name.endsWith('.html')) editor.setOption("mode", "htmlmixed");
+            else if(name.endsWith('.js')) editor.setOption("mode", "javascript");
+            else editor.setOption("mode", "python");
+
+        } catch (e) { alert("Erro ao abrir"); }
     }
 
-    async function saveFile() {
+    async function saveToGitHub() {
         const name = document.getElementById('fileName').value;
-        if (!name) return alert("Nome necessário");
+        if (!name) return alert("Nome obrigatório");
         
-        const btn = document.querySelector('.btn-primary');
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
-        
+        setStatus("Enviando...", "warning");
         try {
             let sha = "";
             try {
@@ -345,15 +229,14 @@
                     sha: sha || null
                 })
             });
+            setStatus("Salvo!", "success");
             fetchFileList();
-        } catch(e) { alert("Erro ao salvar"); }
-        btn.innerHTML = '<i class="bi bi-save"></i>';
+        } catch(e) { setStatus("Erro", "danger"); }
     }
 
     async function deleteFile() {
         const name = document.getElementById('fileName').value;
         if(!name || !confirm('Excluir?')) return;
-        
         try {
             const check = await fetch(`${BACKEND_URL}/${name}`);
             const d = await check.json();
@@ -362,17 +245,21 @@
                 headers: {"Content-Type":"application/json"},
                 body: JSON.stringify({ message: "Delete", sha: d.sha })
             });
-            document.getElementById('fileName').value = "";
-            editor.setValue("");
-            fetchFileList();
-        } catch(e) { alert("Erro ao excluir"); }
+            document.getElementById('fileName').value = ""; editor.setValue(""); fetchFileList();
+        } catch(e) { setStatus("Erro", "danger"); }
     }
 
-    // Inicialização
+    // Utils
+    function toggleOutput() { document.body.classList.toggle('show-output'); }
+    function showOutputPanel(show) { 
+        if(show) document.body.classList.add('show-output');
+        else document.body.classList.remove('show-output');
+    }
+    function clearOutput() { document.getElementById('output-content').innerText = ""; }
+    function setStatus(msg, type) { const el = document.getElementById('status'); el.innerText = msg; el.className = `badge bg-${type} ms-auto`; }
+
     window.onload = fetchFileList;
-    window.addEventListener('resize', () => { if(fitAddon) fitAddon.fit(); });
 </script>
 
 </body>
 </html>
-
