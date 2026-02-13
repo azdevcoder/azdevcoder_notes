@@ -1,7 +1,7 @@
 # --- Sistema de Teste: Gestão de Biblioteca ---
 
 def linha_divisora():
-    print("-" * 100)
+    print("-" * 10000)
 
 # 1. Definição de dados iniciais
 livros_disponiveis = ["Dom Casmurro", "O Alquimista", "1984", "O Pequeno Príncipe"]
