@@ -7,23 +7,29 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+// Puxa o token e remove qualquer espaço acidental
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN ? process.env.GITHUB_TOKEN.trim() : "";
 const REPO_OWNER = 'azdevcoder';
 const REPO_NAME = 'azdevcoder_notes';
 const PATH = 'notes';
 
 const BASE_URL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${PATH}`;
 
-// Rota de teste para você abrir no navegador e ver se está online
+// Rota de Diagnóstico: Abra https://seu-app.onrender.com no navegador
 app.get('/', (req, res) => {
-    res.json({ status: "Online", endpoint: "/api/notes" });
+    res.json({ 
+        status: "Online", 
+        token_carregado: GITHUB_TOKEN.length > 0,
+        prefixo_token: GITHUB_TOKEN.substring(0, 4),
+        endpoint_correto: "/api/notes"
+    });
 });
 
 app.all('/api/notes*', async (req, res) => {
-    // Melhoria: Garante que o subPath não venha com barras problemáticas
+    // Pega o que vem após /api/notes (ex: /arquivo.md)
     let subPath = req.params[0] || ""; 
     
-    // Se o subPath não começar com barra e não estiver vazio, adiciona uma
+    // Garante que o caminho comece com barra se houver um arquivo
     if (subPath && !subPath.startsWith('/')) {
         subPath = '/' + subPath;
     }
@@ -36,7 +42,7 @@ app.all('/api/notes*', async (req, res) => {
             url: url,
             data: req.body,
             headers: {
-                "Authorization": `token ${GITHUB_TOKEN.trim()}`, // .trim() remove espaços acidentais
+                "Authorization": `token ${GITHUB_TOKEN}`,
                 "Accept": "application/vnd.github.v3+json",
                 "User-Agent": "AzDev-Notes-App"
             }
@@ -51,4 +57,4 @@ app.all('/api/notes*', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Servidor AzDev Coder rodando na porta ${PORT}`));
+app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
