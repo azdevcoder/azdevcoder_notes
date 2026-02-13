@@ -6,7 +6,6 @@
     <title>AzDev Notes - GitHub</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    
     <style>
         body, html { height: 100%; overflow: hidden; }
         .app-container { height: 100vh; display: flex; flex-direction: column; }
@@ -14,10 +13,7 @@
         .file-list-container { overflow-y: auto; height: 100%; border-right: 1px solid var(--bs-border-color); }
         .editor-container { display: flex; flex-direction: column; height: 100%; }
         textarea { resize: none; font-family: monospace; font-size: 1.1rem; }
-        
-        @media (max-width: 768px) {
-            .file-list-container { height: 150px; border-right: none; border-bottom: 1px solid var(--bs-border-color); }
-        }
+        @media (max-width: 768px) { .file-list-container { height: 150px; border-bottom: 1px solid var(--bs-border-color); } }
     </style>
 </head>
 <body>
@@ -25,200 +21,113 @@
 <div class="container-fluid p-0 app-container">
     <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom px-3">
         <span class="navbar-brand mb-0 h1"><i class="bi bi-github me-2"></i>AzDev Notes</span>
-        <div class="ms-auto">
-             <span id="status-badge" class="badge bg-secondary">Aguardando...</span>
-        </div>
+        <div class="ms-auto"><span id="status-badge" class="badge bg-secondary">Aguardando...</span></div>
     </nav>
 
     <div class="row g-0 content-area">
         <div class="col-md-3 col-lg-2 bg-body-tertiary file-list-container p-3">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h6 class="m-0 text-muted">PASTA: /NOTES</h6>
-                <button class="btn btn-sm btn-outline-primary" onclick="fetchFileList()" title="Atualizar">
-                    <i class="bi bi-arrow-clockwise"></i>
-                </button>
+                <button class="btn btn-sm btn-outline-primary" onclick="fetchFileList()"><i class="bi bi-arrow-clockwise"></i></button>
             </div>
-            <div class="list-group list-group-flush" id="fileList">
-                <div class="text-center mt-3 text-muted spinner-border spinner-border-sm" role="status"></div>
-            </div>
+            <div class="list-group list-group-flush" id="fileList"></div>
         </div>
 
         <div class="col-md-9 col-lg-10 p-3 bg-body editor-container">
             <div class="input-group mb-3">
                 <span class="input-group-text"><i class="bi bi-file-earmark-text"></i></span>
-                <input type="text" id="fileName" class="form-control" placeholder="Nome do arquivo (ex: reuniao.md)">
-                
-                <button class="btn btn-success" onclick="saveToGitHub()" title="Salvar arquivo">
-                    <i class="bi bi-cloud-upload me-1"></i> Salvar
-                </button>
-                
-                <button class="btn btn-danger" onclick="deleteFile()" title="Excluir arquivo atual">
-                    <i class="bi bi-trash"></i>
-                </button>
+                <input type="text" id="fileName" class="form-control" placeholder="arquivo.md">
+                <button class="btn btn-success" onclick="saveToGitHub()"><i class="bi bi-cloud-upload"></i> Salvar</button>
+                <button class="btn btn-danger" onclick="deleteFile()"><i class="bi bi-trash"></i></button>
             </div>
-            
-            <textarea id="content" class="form-control flex-grow-1" placeholder="Selecione um arquivo ou crie um novo..."></textarea>
-            
-            <div class="mt-2 text-end text-muted small">
-                <small>API GitHub v3 via Proxy Render • AzDev Coder</small>
-            </div>
+            <textarea id="content" class="form-control flex-grow-1" placeholder="Escreva aqui..."></textarea>
         </div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
-    // --- CONFIGURAÇÃO ---
-    // Importante: A URL termina em /api/notes para coincidir com o server.js
-    const BACKEND_URL = "https://azdevcoder-notes.onrender.com/api/notes?t=1770988844634";
+    // URL do seu serviço no Render (mantenha o /api/notes no final)
+    const BACKEND_URL = "https://azdevcoder-notes.onrender.com/api/notes";
 
     function setStatus(msg, type = 'secondary') {
-        const badge = document.getElementById('status-badge');
-        badge.innerText = msg;
-        badge.className = `badge bg-${type}`;
+        const b = document.getElementById('status-badge');
+        b.innerText = msg; b.className = `badge bg-${type}`;
     }
 
-    // 1. LISTAR ARQUIVOS
     async function fetchFileList() {
-        setStatus("Carregando lista...", "warning");
-        const listElement = document.getElementById('fileList');
-        
+        setStatus("Sincronizando...", "warning");
         try {
-            const response = await fetch(`${BACKEND_URL}?t=${new Date().getTime()}`);
-            
-            if (!response.ok) throw new Error("Falha ao buscar lista");
-
-            const files = await response.json();
-            listElement.innerHTML = '';
-
-            if (!Array.isArray(files)) {
-                listElement.innerHTML = '<div class="text-muted small">Nenhum arquivo encontrado.</div>';
-                setStatus("Pasta vazia", "secondary");
-                return;
-            }
-
-            files.forEach(file => {
-                if(file.type === 'file') {
+            const r = await fetch(`${BACKEND_URL}?t=${Date.now()}`);
+            if (!r.ok) throw new Error();
+            const files = await r.json();
+            const list = document.getElementById('fileList');
+            list.innerHTML = '';
+            files.forEach(f => {
+                if(f.type === 'file') {
                     const btn = document.createElement('button');
                     btn.className = 'list-group-item list-group-item-action py-2 border-0';
-                    btn.innerHTML = `<i class="bi bi-file-text me-2"></i> ${file.name}`;
-                    btn.onclick = () => loadFile(file.name);
-                    listElement.appendChild(btn);
+                    btn.innerHTML = `<i class="bi bi-file-text me-2"></i> ${f.name}`;
+                    btn.onclick = () => loadFile(f.name);
+                    list.appendChild(btn);
                 }
             });
-            setStatus("Pronto", "success");
-        } catch (err) {
-            console.error(err);
-            listElement.innerHTML = '<div class="text-danger small">Erro ao conectar ao Proxy.</div>';
-            setStatus("Erro", "danger");
-        }
+            setStatus("Online", "success");
+        } catch (e) { setStatus("Erro de Conexão", "danger"); }
     }
 
-    // 2. CARREGAR ARQUIVO
-    async function loadFile(fileName) {
-        setStatus("Baixando...", "info");
+    async function loadFile(name) {
+        setStatus("Abrindo...", "info");
         try {
-            const url = `${BACKEND_URL}/${fileName}?t=${new Date().getTime()}`;
-            const response = await fetch(url);
-            
-            if(!response.ok) throw new Error("Arquivo não encontrado");
-
-            const data = await response.json();
-            const decodedContent = decodeURIComponent(escape(atob(data.content)));
-            
+            const r = await fetch(`${BACKEND_URL}/${name}?t=${Date.now()}`);
+            const data = await r.json();
             document.getElementById('fileName').value = data.name;
-            document.getElementById('content').value = decodedContent;
-            setStatus("Carregado", "primary");
-        } catch (err) {
-            console.error(err);
-            setStatus("Erro ao abrir", "danger");
-        }
+            document.getElementById('content').value = decodeURIComponent(escape(atob(data.content)));
+            setStatus("Editando", "primary");
+        } catch (e) { setStatus("Erro ao abrir", "danger"); }
     }
 
-    // 3. SALVAR ARQUIVO
     async function saveToGitHub() {
-        const fileName = document.getElementById('fileName').value;
-        const content = document.getElementById('content').value;
-
-        if (!fileName) return alert("Por favor, dê um nome ao arquivo.");
-        setStatus("Enviando...", "warning");
-
+        const name = document.getElementById('fileName').value;
+        const text = document.getElementById('content').value;
+        if (!name) return alert("Nome do arquivo vazio!");
+        setStatus("Salvando...", "warning");
         try {
             let sha = "";
-            const checkFile = await fetch(`${BACKEND_URL}/${fileName}`);
-            
-            if (checkFile.ok) {
-                const fileData = await checkFile.json();
-                sha = fileData.sha;
-            }
+            const check = await fetch(`${BACKEND_URL}/${name}`);
+            if (check.ok) { const d = await check.json(); sha = d.sha; }
 
-            const response = await fetch(`${BACKEND_URL}/${fileName}`, {
+            const r = await fetch(`${BACKEND_URL}/${name}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    message: `Update via WebApp: ${fileName}`,
-                    content: btoa(unescape(encodeURIComponent(content))),
+                    message: `Update: ${name}`,
+                    content: btoa(unescape(encodeURIComponent(text))),
                     sha: sha || null
                 })
             });
-
-            if (response.ok) {
-                setStatus("Salvo!", "success");
-                if (!sha) fetchFileList(); 
-            } else {
-                const err = await response.json();
-                setStatus("Erro ao salvar", "danger");
-                alert("Erro: " + (err.message || "Desconhecido"));
-            }
-        } catch (err) {
-            console.error(err);
-            setStatus("Erro de conexão", "danger");
-        }
+            if (r.ok) { setStatus("Salvo!", "success"); fetchFileList(); }
+        } catch (e) { setStatus("Erro ao salvar", "danger"); }
     }
 
-    // 4. EXCLUIR ARQUIVO
     async function deleteFile() {
-        const fileName = document.getElementById('fileName').value;
-        if (!fileName) return alert("Selecione um arquivo para excluir.");
-
-        if (!confirm(`Tem certeza que deseja EXCLUIR "${fileName}"?`)) return;
-
+        const name = document.getElementById('fileName').value;
+        if (!name || !confirm("Excluir?")) return;
         setStatus("Excluindo...", "danger");
-
         try {
-            const checkFile = await fetch(`${BACKEND_URL}/${fileName}`);
-            if (!checkFile.ok) return alert("Arquivo não encontrado.");
-
-            const fileData = await checkFile.json();
-            const sha = fileData.sha;
-
-            const response = await fetch(`${BACKEND_URL}/${fileName}`, {
+            const check = await fetch(`${BACKEND_URL}/${name}`);
+            const d = await check.json();
+            await fetch(`${BACKEND_URL}/${name}`, {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    message: `Delete via WebApp: ${fileName}`,
-                    sha: sha
-                })
+                body: JSON.stringify({ message: "Delete", sha: d.sha })
             });
-
-            if (response.ok) {
-                setStatus("Excluído", "success");
-                document.getElementById('fileName').value = "";
-                document.getElementById('content').value = "";
-                fetchFileList();
-            } else {
-                setStatus("Erro ao excluir", "danger");
-            }
-        } catch (err) {
-            console.error(err);
-            setStatus("Erro de conexão", "danger");
-        }
+            document.getElementById('fileName').value = "";
+            document.getElementById('content').value = "";
+            fetchFileList();
+        } catch (e) { setStatus("Erro", "danger"); }
     }
 
     window.onload = fetchFileList;
 </script>
-
 </body>
 </html>
-
