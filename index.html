@@ -185,7 +185,67 @@
         } catch (e) { alert("Erro ao salvar"); }
     }
 
+    // 4. EXCLUIR ARQUIVO (Nova Versão Integrada)
+    async function deleteFile() {
+        const fileName = document.getElementById('fileName').value;
+        
+        if (!fileName) {
+            return alert("Selecione um arquivo na lista para poder excluí-lo.");
+        }
+
+        if (!confirm(`André, tem certeza que deseja EXCLUIR permanentemente o arquivo "${fileName}"?`)) {
+            return;
+        }
+
+        setStatus("Excluindo...", "danger");
+
+        try {
+            // 1. Busca o SHA do arquivo para autorizar a exclusão no GitHub
+            const checkFile = await fetch(`${BACKEND_URL}/${fileName}`);
+            
+            if (!checkFile.ok) {
+                setStatus("Não encontrado", "warning");
+                return alert("Arquivo não existe no repositório.");
+            }
+
+            const fileData = await checkFile.json();
+            const sha = fileData.sha;
+
+            // 2. Envia a requisição de DELETE para o seu Proxy no Render
+            const response = await fetch(`${BACKEND_URL}/${fileName}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    message: `Delete via AzDev Studio: ${fileName}`,
+                    sha: sha
+                })
+            });
+
+            if (response.ok) {
+                setStatus("Excluído!", "success");
+                
+                // Limpa os campos após excluir
+                document.getElementById('fileName').value = "";
+                editor.setValue(""); // Limpa o CodeMirror
+                document.getElementById('rich-editor').innerHTML = ""; // Limpa o Word
+                
+                // Atualiza a lista de arquivos lateral
+                fetchFileList();
+            } else {
+                const err = await response.json();
+                setStatus("Erro ao excluir", "danger");
+                alert("Erro: " + (err.message || "Não foi possível excluir."));
+            }
+        } catch (err) {
+            console.error(err);
+            setStatus("Erro de conexão", "danger");
+        }
+    }
+
     window.onload = fetchFileList;
 </script>
 </body>
 </html>
+
