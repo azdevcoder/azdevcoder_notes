@@ -92,9 +92,9 @@
         setStatus("Carregando lista...", "warning");
         const listElement = document.getElementById('fileList');
         
+        
         try {
-            const response = await fetch(`${BASE_URL}?t=${new Date().getTime()}`, { 
-                headers: { "Authorization": `token ${GITHUB_TOKEN}` }
+            const response = await fetch(`${BACKEND_URL}?t=${new Date().getTime()}`);
             });
             
             if (!response.ok) throw new Error("Falha na conexão (Verifique Token/Repo)");
@@ -265,5 +265,6 @@
 
 </body>
 </html>
+
 
 
