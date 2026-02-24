@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fut7 Evolution | AzDev Coder</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --primary: #58a6ff;
+            --success: #238636;
+            --text: #c9d1d9;
+            --border: #30363d;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 { margin-bottom: 5px; font-size: 1.8rem; }
+        h1 span { color: var(--primary); }
+        #current-date { color: #8b949e; font-size: 0.9rem; text-transform: capitalize; }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        h2 { 
+            font-size: 1.2rem; 
+            margin-top: 0; 
+            border-bottom: 1px solid var(--border); 
+            padding-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .workout-box h3 { margin: 15px 0 5px 0; color: #fff; }
+        .workout-box p { font-size: 0.95rem; line-height: 1.5; color: #8b949e; }
+
+        .input-group {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        label { font-size: 0.85rem; color: #8b949e; }
+
+        input[type="number"] {
+            background: #0d1117;
+            border: 1px solid var(--border);
+            color: white;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        button {
+            background-color: var(--success);
+            color: white;
+            border: none;
+            padding: 15px;
+            width: 100%;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: filter 0.2s;
+        }
+
+        button:active { filter: brightness(1.2); }
+
+        .log-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 10px;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .log-item {
+            font-size: 0.85rem;
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .log-item span { color: var(--primary); font-weight: bold; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Fut7 <span>Evolution</span></h1>
+            <p id="current-date"></p>
+        </header>
+
+        <main>
+            <section class="card">
+                <h2>Treino do Dia</h2>
+                <div id="workout-content" class="workout-box">
+                    </div>
+                <div class="input-group">
+                    <label for="intensity">Qual foi o nível de esforço? (1-10)</label>
+                    <input type="number" id="intensity" min="1" max="10" placeholder="Ex: 8">
+                    <button onclick="saveProgress()">CONCLUIR TREINO</button>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>Sua Evolução</h2>
+                <ul id="log-list" class="log-list">
+                    </ul>
+                <button onclick="clearLogs()" style="background: transparent; color: #f85149; font-size: 0.7rem; margin-top: 10px; border: 1px solid #f85149; padding: 5px;">Limpar Histórico</button>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const workouts = [
+            { day: "Domingo", title: "Recuperação Ativa", desc: "Caminhada leve de 20 min ou alongamento focado em pernas." },
+            { day: "Segunda", title: "Ativação Pré-Jogo", desc: "Mobilidade de quadril, tornozelos e 10 min de trote leve. Guarde energia para o jogo!" },
+            { day: "Terça", title: "Descanso Total", desc: "Foco na recuperação pós-jogo. Hidratação reforçada." },
+            { day: "Quarta", title: "Força e Potência", desc: "Agachamento Búlgaro (3x12), Afundo (3x10) e Prancha Abdominal (3x45s)." },
+            { day: "Quinta", title: "HIIT: Shuttle Run", desc: "10 tiros de 30s em velocidade máxima por 30s de descanso caminhando." },
+            { day: "Sexta", title: "Técnica Explosiva", desc: "Zigue-zague com bola em velocidade e frenagens bruscas para simular drible." },
+            { day: "Sábado", title: "Resistência de Jogo", desc: "20 tiros de 20 metros (ida e volta). Simule a transição defesa-ataque." }
+        ];
+
+        function init() {
+            const today = new Date();
+            const dayOfWeek = today.getDay(); // 0 (Dom) a 6 (Sáb)
+            const workout = workouts[dayOfWeek];
+
+            // Formata data atual
+            const options = { weekday: 'long', day: 'numeric', month: 'long' };
+            document.getElementById('current-date').innerText = today.toLocaleDateString('pt-BR', options);
+            
+            // Renderiza treino
+            document.getElementById('workout-content').innerHTML = `
+                <h3>${workout.title}</h3>
+                <p>${workout.desc}</p>
+            `;
+            
+            displayLogs();
+        }
+
+        function saveProgress() {
+            const intensity = document.getElementById('intensity').value;
+            if (!intensity) return alert("Insira o nível de esforço!");
+
+            const today = new Date().toLocaleDateString('pt-BR');
+            const workoutTitle = workouts[new Date().getDay()].title;
+
+            const log = { 
+                date: today, 
+                title: workoutTitle, 
+                intensity: intensity 
+            };
+            
+            let history = JSON.parse(localStorage.getItem('fut7_logs')) || [];
+            history.unshift(log);
+            localStorage.setItem('fut7_logs', JSON.stringify(history));
+            
+            document.getElementById('intensity').value = '';
+            alert("Boa, André! Treino registrado.");
+            displayLogs();
+        }
+
+        function displayLogs() {
+            const history = JSON.parse(localStorage.getItem('fut7_logs')) || [];
+            const list = document.getElementById('log-list');
+            
+            if (history.length === 0) {
+                list.innerHTML = `<li class="log-item">Nenhum treino registrado ainda.</li>`;
+                return;
+            }
+
+            list.innerHTML = history.map(item => `
+                <li class="log-item">
+                    <div><strong>${item.date}</strong> - ${item.title}</div>
+                    <span>🔥 ${item.intensity}/10</span>
+                </li>
+            `).join('');
+        }
+
+        function clearLogs() {
+            if (confirm("Deseja apagar seu histórico de evolução?")) {
+                localStorage.removeItem('fut7_logs');
+                displayLogs();
+            }
+        }
+
+        // Inicia o app
+        init();
+    </script>
+</body>
+</html>
