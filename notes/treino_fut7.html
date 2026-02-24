@@ -13,22 +13,26 @@
         }
 
         :root {
-            --primary: #1a73e8;
-            --primary-dark: #1557b0;
-            --secondary: #34a853;
-            --warning: #fbbc04;
-            --danger: #ea4335;
-            --dark: #202124;
-            --light: #f8f9fa;
-            --gray: #5f6368;
-            --border: #dadce0;
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --primary: #58a6ff;
+            --primary-dark: #388bfd;
+            --success: #238636;
+            --success-light: #2ea043;
+            --warning: #d29922;
+            --danger: #f85149;
+            --text: #c9d1d9;
+            --text-muted: #8b949e;
+            --border: #30363d;
+            --hover-bg: #21262d;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--bg-color);
             min-height: 100vh;
             padding: 20px;
+            color: var(--text);
         }
 
         .container {
@@ -38,21 +42,22 @@
 
         /* Header */
         .header {
-            background: white;
+            background: var(--card-bg);
             border-radius: 16px;
             padding: 20px 30px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            border: 1px solid var(--border);
         }
 
         .header h1 {
-            color: var(--dark);
+            color: var(--text);
             font-size: 28px;
             margin-bottom: 10px;
         }
 
         .header p {
-            color: var(--gray);
+            color: var(--text-muted);
         }
 
         /* Navigation */
@@ -65,39 +70,41 @@
 
         .nav-tab {
             padding: 12px 24px;
-            background: white;
-            border: none;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
             border-radius: 25px;
             cursor: pointer;
             font-size: 14px;
             font-weight: 500;
-            color: var(--gray);
+            color: var(--text-muted);
             transition: all 0.3s;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
         .nav-tab:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            border-color: var(--primary);
+            color: var(--text);
         }
 
         .nav-tab.active {
             background: var(--primary);
-            color: white;
+            color: #ffffff;
+            border-color: var(--primary);
         }
 
         /* Cards */
         .card {
-            background: white;
+            background: var(--card-bg);
             border-radius: 16px;
             padding: 25px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            border: 1px solid var(--border);
         }
 
         .card-title {
             font-size: 20px;
-            color: var(--dark);
+            color: var(--text);
             margin-bottom: 20px;
             display: flex;
             align-items: center;
@@ -118,9 +125,9 @@
 
         .training-type-btn {
             padding: 20px;
-            border: 2px solid var(--border);
+            border: 1px solid var(--border);
             border-radius: 12px;
-            background: white;
+            background: var(--card-bg);
             cursor: pointer;
             transition: all 0.3s;
             text-align: left;
@@ -128,12 +135,12 @@
 
         .training-type-btn:hover {
             border-color: var(--primary);
-            transform: scale(1.02);
+            background: var(--hover-bg);
         }
 
         .training-type-btn.selected {
             border-color: var(--primary);
-            background: linear-gradient(135deg, #e8f0fe 0%, #f3e5f5 100%);
+            background: rgba(88, 166, 255, 0.1);
         }
 
         .training-type-btn .icon {
@@ -143,13 +150,13 @@
 
         .training-type-btn .name {
             font-weight: 600;
-            color: var(--dark);
+            color: var(--text);
             margin-bottom: 4px;
         }
 
         .training-type-btn .desc {
             font-size: 12px;
-            color: var(--gray);
+            color: var(--text-muted);
         }
 
         /* Exercise List */
@@ -162,20 +169,22 @@
             align-items: center;
             gap: 15px;
             padding: 15px;
-            background: var(--light);
+            background: var(--hover-bg);
             border-radius: 10px;
             margin-bottom: 10px;
             transition: all 0.3s;
+            border: 1px solid var(--border);
         }
 
         .exercise-item:hover {
-            background: #e8f0fe;
+            border-color: var(--primary);
         }
 
         .exercise-item input[type="checkbox"] {
             width: 20px;
             height: 20px;
             cursor: pointer;
+            accent-color: var(--primary);
         }
 
         .exercise-item .exercise-info {
@@ -184,12 +193,12 @@
 
         .exercise-item .exercise-name {
             font-weight: 500;
-            color: var(--dark);
+            color: var(--text);
         }
 
         .exercise-item .exercise-details {
             font-size: 13px;
-            color: var(--gray);
+            color: var(--text-muted);
         }
 
         .exercise-item input[type="text"],
@@ -199,10 +208,13 @@
             border-radius: 6px;
             font-size: 14px;
             width: 100px;
+            background: var(--bg-color);
+            color: var(--text);
         }
 
         .exercise-item.completed {
-            background: #e6f4ea;
+            background: rgba(35, 134, 54, 0.2);
+            border-color: var(--success);
             text-decoration: line-through;
             opacity: 0.7;
         }
@@ -218,17 +230,23 @@
             text-align: center;
             padding: 30px;
             border-radius: 16px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: var(--hover-bg);
+            border: 1px solid var(--primary);
+            color: var(--text);
         }
 
         .timer-box.rest {
-            background: linear-gradient(135deg, #34a853 0%, #0d652d 100%);
+            border-color: var(--success);
         }
 
         .timer-box h3 {
             margin-bottom: 15px;
             font-size: 18px;
+            color: var(--primary);
+        }
+
+        .timer-box.rest h3 {
+            color: var(--success);
         }
 
         .timer-display {
@@ -236,6 +254,7 @@
             font-weight: bold;
             font-family: 'Courier New', monospace;
             margin-bottom: 20px;
+            color: var(--text);
         }
 
         .timer-buttons {
@@ -256,18 +275,19 @@
         }
 
         .timer-btn.start {
-            background: white;
-            color: var(--primary);
+            background: var(--primary);
+            color: #ffffff;
         }
 
         .timer-btn.pause {
             background: var(--warning);
-            color: var(--dark);
+            color: #000000;
         }
 
         .timer-btn.reset {
-            background: rgba(255,255,255,0.2);
-            color: white;
+            background: var(--hover-bg);
+            color: var(--text);
+            border: 1px solid var(--border);
         }
 
         .timer-btn:hover {
@@ -285,17 +305,18 @@
         .stat-box {
             text-align: center;
             padding: 20px;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: var(--hover-bg);
             border-radius: 12px;
-            color: white;
+            color: var(--text);
+            border: 1px solid var(--border);
         }
 
         .stat-box.goals {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border-color: var(--primary);
         }
 
         .stat-box.assists {
-            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            border-color: var(--success);
         }
 
         .stat-box label {
@@ -316,21 +337,22 @@
             height: 36px;
             border: none;
             border-radius: 50%;
-            background: rgba(255,255,255,0.3);
-            color: white;
+            background: var(--primary);
+            color: #ffffff;
             font-size: 20px;
             cursor: pointer;
             transition: all 0.3s;
         }
 
         .stat-btn:hover {
-            background: rgba(255,255,255,0.5);
+            background: var(--primary-dark);
         }
 
         .stat-value {
             font-size: 32px;
             font-weight: bold;
             min-width: 50px;
+            color: var(--text);
         }
 
         /* Rating */
@@ -346,15 +368,18 @@
 
         .rating-option {
             padding: 12px 20px;
-            border: 2px solid var(--border);
+            border: 1px solid var(--border);
             border-radius: 25px;
             cursor: pointer;
             transition: all 0.3s;
             font-weight: 500;
+            background: var(--hover-bg);
+            color: var(--text);
         }
 
         .rating-option:hover {
             transform: scale(1.05);
+            border-color: var(--primary);
         }
 
         .rating-option.selected {
@@ -362,29 +387,29 @@
         }
 
         .rating-option[data-value="pessimo"].selected {
-            background: #ea4335;
-            border-color: #ea4335;
+            background: var(--danger);
+            border-color: var(--danger);
         }
 
         .rating-option[data-value="ruim"].selected {
-            background: #ff6b6b;
-            border-color: #ff6b6b;
+            background: #da3633;
+            border-color: #da3633;
         }
 
         .rating-option[data-value="medio"].selected {
-            background: #fbbc04;
-            border-color: #fbbc04;
-            color: var(--dark);
+            background: var(--warning);
+            border-color: var(--warning);
+            color: #000000;
         }
 
         .rating-option[data-value="bom"].selected {
-            background: #34a853;
-            border-color: #34a853;
+            background: var(--success);
+            border-color: var(--success);
         }
 
         .rating-option[data-value="otimo"].selected {
-            background: #1a73e8;
-            border-color: #1a73e8;
+            background: var(--primary);
+            border-color: var(--primary);
         }
 
         /* Observation */
@@ -392,11 +417,13 @@
             width: 100%;
             min-height: 120px;
             padding: 15px;
-            border: 2px solid var(--border);
+            border: 1px solid var(--border);
             border-radius: 12px;
             font-size: 14px;
             resize: vertical;
             font-family: inherit;
+            background: var(--bg-color);
+            color: var(--text);
         }
 
         .observation-box:focus {
@@ -404,14 +431,18 @@
             border-color: var(--primary);
         }
 
+        .observation-box::placeholder {
+            color: var(--text-muted);
+        }
+
         /* Save Button */
         .save-btn {
             width: 100%;
             padding: 18px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--success);
             border: none;
             border-radius: 12px;
-            color: white;
+            color: #ffffff;
             font-size: 18px;
             font-weight: 600;
             cursor: pointer;
@@ -421,7 +452,8 @@
 
         .save-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            background: var(--success-light);
+            box-shadow: 0 8px 25px rgba(35, 134, 54, 0.4);
         }
 
         /* Dashboard */
@@ -435,54 +467,51 @@
         .dashboard-stat {
             padding: 25px;
             border-radius: 16px;
-            color: white;
+            color: var(--text);
             position: relative;
             overflow: hidden;
-        }
-
-        .dashboard-stat::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 100%;
-            height: 100%;
-            background: rgba(255,255,255,0.1);
-            border-radius: 50%;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
         }
 
         .dashboard-stat.total-trainings {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-left: 4px solid var(--primary);
         }
 
         .dashboard-stat.total-games {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-left: 4px solid #f778ba;
         }
 
         .dashboard-stat.total-goals {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border-left: 4px solid #79c0ff;
         }
 
         .dashboard-stat.total-assists {
-            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            border-left: 4px solid var(--success);
         }
 
         .dashboard-stat .stat-label {
             font-size: 14px;
-            opacity: 0.9;
+            color: var(--text-muted);
             margin-bottom: 8px;
         }
 
         .dashboard-stat .stat-number {
             font-size: 36px;
             font-weight: bold;
+            color: var(--text);
         }
 
         .chart-container {
-            background: white;
+            background: var(--card-bg);
             border-radius: 16px;
             padding: 20px;
             margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .chart-container h3 {
+            color: var(--text);
         }
 
         /* History */
@@ -491,19 +520,20 @@
             justify-content: space-between;
             align-items: center;
             padding: 15px;
-            background: var(--light);
+            background: var(--hover-bg);
             border-radius: 10px;
             margin-bottom: 10px;
+            border: 1px solid var(--border);
         }
 
         .history-item .date {
             font-weight: 600;
-            color: var(--dark);
+            color: var(--text);
         }
 
         .history-item .type {
             font-size: 13px;
-            color: var(--gray);
+            color: var(--text-muted);
         }
 
         .history-item .rating-badge {
@@ -524,6 +554,10 @@
             font-size: 12px;
         }
 
+        .history-item .delete-btn:hover {
+            background: #da3633;
+        }
+
         /* Tips */
         .tips-container {
             margin-top: 20px;
@@ -531,7 +565,7 @@
 
         .tip-card {
             padding: 20px;
-            background: linear-gradient(135deg, #e8f0fe 0%, #f3e5f5 100%);
+            background: var(--hover-bg);
             border-left: 4px solid var(--primary);
             border-radius: 0 12px 12px 0;
             margin-bottom: 15px;
@@ -543,7 +577,7 @@
         }
 
         .tip-card p {
-            color: var(--gray);
+            color: var(--text-muted);
             font-size: 14px;
             line-height: 1.6;
         }
@@ -556,7 +590,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.7);
             z-index: 1000;
             justify-content: center;
             align-items: center;
@@ -568,13 +602,14 @@
         }
 
         .modal-content {
-            background: white;
+            background: var(--card-bg);
             border-radius: 16px;
             padding: 30px;
             max-width: 600px;
             width: 100%;
             max-height: 80vh;
             overflow-y: auto;
+            border: 1px solid var(--border);
         }
 
         .modal-header {
@@ -584,12 +619,20 @@
             margin-bottom: 20px;
         }
 
+        .modal-header h3 {
+            color: var(--text);
+        }
+
         .modal-close {
             background: none;
             border: none;
             font-size: 28px;
             cursor: pointer;
-            color: var(--gray);
+            color: var(--text-muted);
+        }
+
+        .modal-close:hover {
+            color: var(--text);
         }
 
         .form-group {
@@ -600,16 +643,18 @@
             display: block;
             margin-bottom: 8px;
             font-weight: 500;
-            color: var(--dark);
+            color: var(--text);
         }
 
         .form-group input,
         .form-group select {
             width: 100%;
             padding: 12px;
-            border: 2px solid var(--border);
+            border: 1px solid var(--border);
             border-radius: 8px;
             font-size: 14px;
+            background: var(--bg-color);
+            color: var(--text);
         }
 
         .form-group input:focus,
@@ -618,14 +663,23 @@
             border-color: var(--primary);
         }
 
+        .form-group select option {
+            background: var(--card-bg);
+            color: var(--text);
+        }
+
         .btn-add {
-            background: var(--secondary);
+            background: var(--success);
             color: white;
             border: none;
             padding: 12px 24px;
             border-radius: 8px;
             cursor: pointer;
             font-weight: 500;
+        }
+
+        .btn-add:hover {
+            background: var(--success-light);
         }
 
         /* Section visibility */
@@ -663,7 +717,7 @@
             justify-content: space-between;
             margin-bottom: 5px;
             font-size: 14px;
-            color: var(--gray);
+            color: var(--text-muted);
         }
 
         .progress-bar {
@@ -675,7 +729,7 @@
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #667eea, #764ba2);
+            background: var(--primary);
             border-radius: 5px;
             transition: width 0.5s ease;
         }
@@ -686,10 +740,10 @@
             bottom: 30px;
             right: 30px;
             padding: 15px 25px;
-            background: var(--secondary);
+            background: var(--success);
             color: white;
             border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
             transform: translateX(150%);
             transition: transform 0.3s ease;
             z-index: 1001;
@@ -697,6 +751,24 @@
 
         .toast.show {
             transform: translateX(0);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-color);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
         }
     </style>
 </head>
@@ -754,7 +826,7 @@
             <div class="card" id="exerciseListCard">
                 <h2 class="card-title"><span>📝</span> Exercícios do Treino</h2>
                 <div class="exercise-list" id="exerciseList">
-                    <p style="color: var(--gray); text-align: center;">Selecione um tipo de treino acima</p>
+                    <p style="color: var(--text-muted); text-align: center;">Selecione um tipo de treino acima</p>
                 </div>
                 <div class="progress-container" id="progressContainer" style="display: none;">
                     <div class="progress-label">
@@ -836,17 +908,17 @@
             </div>
 
             <div class="chart-container">
-                <h3 style="margin-bottom: 20px; color: var(--dark);">📈 Evolução das Avaliações</h3>
+                <h3 style="margin-bottom: 20px;">📈 Evolução das Avaliações</h3>
                 <canvas id="evolutionChart"></canvas>
             </div>
 
             <div class="chart-container">
-                <h3 style="margin-bottom: 20px; color: var(--dark);">📊 Treinos por Tipo</h3>
+                <h3 style="margin-bottom: 20px;">📊 Treinos por Tipo</h3>
                 <canvas id="typeChart"></canvas>
             </div>
 
             <div class="chart-container">
-                <h3 style="margin-bottom: 20px; color: var(--dark);">⚽ Gols e Assistências por Jogo</h3>
+                <h3 style="margin-bottom: 20px;">⚽ Gols e Assistências por Jogo</h3>
                 <canvas id="gameStatsChart"></canvas>
             </div>
         </div>
@@ -856,7 +928,7 @@
             <div class="card">
                 <h2 class="card-title"><span>📋</span> Histórico de Treinos</h2>
                 <div id="historyList">
-                    <p style="color: var(--gray); text-align: center;">Nenhum treino registrado ainda</p>
+                    <p style="color: var(--text-muted); text-align: center;">Nenhum treino registrado ainda</p>
                 </div>
             </div>
         </div>
@@ -1077,7 +1149,7 @@
             const progressContainer = document.getElementById('progressContainer');
 
             if (exercises.length === 0) {
-                container.innerHTML = '<p style="color: var(--gray); text-align: center;">Nenhum exercício cadastrado para este tipo</p>';
+                container.innerHTML = '<p style="color: var(--text-muted); text-align: center;">Nenhum exercício cadastrado para este tipo</p>';
                 progressContainer.style.display = 'none';
                 return;
             }
@@ -1256,7 +1328,7 @@
             document.getElementById('observation').value = '';
             document.querySelectorAll('.training-type-btn').forEach(btn => btn.classList.remove('selected'));
             document.querySelectorAll('.rating-option').forEach(opt => opt.classList.remove('selected'));
-            document.getElementById('exerciseList').innerHTML = '<p style="color: var(--gray); text-align: center;">Selecione um tipo de treino acima</p>';
+            document.getElementById('exerciseList').innerHTML = '<p style="color: var(--text-muted); text-align: center;">Selecione um tipo de treino acima</p>';
             document.getElementById('progressContainer').style.display = 'none';
             document.getElementById('gameStatsCard').style.display = 'none';
         }
@@ -1292,21 +1364,32 @@
                     datasets: [{
                         label: 'Avaliação',
                         data: last10.map(t => ratingValues[t.rating] || 0),
-                        borderColor: '#667eea',
-                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        borderColor: '#58a6ff',
+                        backgroundColor: 'rgba(88, 166, 255, 0.1)',
                         fill: true,
                         tension: 0.4
                     }]
                 },
                 options: {
                     responsive: true,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#c9d1d9' }
+                        }
+                    },
                     scales: {
                         y: {
                             min: 0,
                             max: 5,
                             ticks: {
+                                color: '#8b949e',
                                 callback: value => ['', 'Péssimo', 'Ruim', 'Médio', 'Bom', 'Ótimo'][value]
-                            }
+                            },
+                            grid: { color: '#30363d' }
+                        },
+                        x: {
+                            ticks: { color: '#8b949e' },
+                            grid: { color: '#30363d' }
                         }
                     }
                 }
@@ -1330,12 +1413,19 @@
                     datasets: [{
                         data: types.map(t => counts[t.id]),
                         backgroundColor: [
-                            '#667eea', '#f093fb', '#4facfe', '#43e97b', '#f5576c', '#ffecd2', '#a8edea'
-                        ]
+                            '#58a6ff', '#f778ba', '#79c0ff', '#238636', '#f85149', '#d29922', '#a5d6ff'
+                        ],
+                        borderColor: '#161b22',
+                        borderWidth: 2
                     }]
                 },
                 options: {
-                    responsive: true
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#c9d1d9' }
+                        }
+                    }
                 }
             });
         }
@@ -1354,19 +1444,32 @@
                         {
                             label: 'Gols',
                             data: games.map(g => g.goals || 0),
-                            backgroundColor: '#4facfe'
+                            backgroundColor: '#58a6ff'
                         },
                         {
                             label: 'Assistências',
                             data: games.map(g => g.assists || 0),
-                            backgroundColor: '#43e97b'
+                            backgroundColor: '#238636'
                         }
                     ]
                 },
                 options: {
                     responsive: true,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#c9d1d9' }
+                        }
+                    },
                     scales: {
-                        y: { beginAtZero: true }
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: '#8b949e' },
+                            grid: { color: '#30363d' }
+                        },
+                        x: {
+                            ticks: { color: '#8b949e' },
+                            grid: { color: '#30363d' }
+                        }
                     }
                 }
             });
@@ -1378,16 +1481,16 @@
             const history = getTrainingHistory();
 
             if (history.length === 0) {
-                container.innerHTML = '<p style="color: var(--gray); text-align: center;">Nenhum treino registrado ainda</p>';
+                container.innerHTML = '<p style="color: var(--text-muted); text-align: center;">Nenhum treino registrado ainda</p>';
                 return;
             }
 
             const ratingColors = {
-                pessimo: '#ea4335',
-                ruim: '#ff6b6b',
-                medio: '#fbbc04',
-                bom: '#34a853',
-                otimo: '#1a73e8'
+                pessimo: '#f85149',
+                ruim: '#da3633',
+                medio: '#d29922',
+                bom: '#238636',
+                otimo: '#58a6ff'
             };
 
             const ratingLabels = {
@@ -1672,7 +1775,7 @@
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             toast.textContent = message;
-            toast.style.background = type === 'error' ? '#ea4335' : '#34a853';
+            toast.style.background = type === 'error' ? '#f85149' : '#238636';
             toast.classList.add('show');
             
             setTimeout(() => {
