@@ -6,6 +6,7 @@
     <title>Fut7 Training System</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
@@ -15,13 +16,11 @@
             min-height: 100vh;
         }
 
-        /* --- Custom UI Logic & Helpers --- */
         .section { display: none; }
         .section.active { display: block; }
         
         .transition-all { transition: all 0.3s ease; }
 
-        /* Sync Indicator Animation */
         .sync-indicator {
             width: 12px; height: 12px; border-radius: 50%;
             display: inline-block; background: var(--bs-secondary);
@@ -36,7 +35,6 @@
             50% { opacity: 0.5; }
         }
 
-        /* Training Types Selection */
         .training-type-btn { cursor: pointer; transition: all 0.2s; border: 2px solid transparent !important; }
         .training-type-btn:hover { background-color: var(--bs-tertiary-bg) !important; border-color: var(--bs-primary-border-subtle) !important; }
         .training-type-btn.selected { 
@@ -44,7 +42,6 @@
             background-color: rgba(13, 110, 253, 0.1) !important; 
         }
 
-        /* Exercise Items */
         .exercise-item { transition: all 0.2s; border-left: 4px solid transparent; }
         .exercise-item.completed { 
             background-color: rgba(25, 135, 84, 0.1) !important; 
@@ -53,7 +50,6 @@
             opacity: 0.8; 
         }
 
-        /* Rating Options */
         .rating-option { cursor: pointer; transition: all 0.2s; user-select: none; }
         .rating-option.selected { color: white !important; font-weight: bold; }
         .rating-option[data-value="pessimo"].selected { background-color: var(--bs-danger); border-color: var(--bs-danger); }
@@ -62,7 +58,6 @@
         .rating-option[data-value="bom"].selected { background-color: var(--bs-success); border-color: var(--bs-success); }
         .rating-option[data-value="otimo"].selected { background-color: var(--bs-primary); border-color: var(--bs-primary); }
 
-        /* Overlays (Lock, Loading, Custom Modal) */
         .full-overlay {
             display: none; position: fixed; inset: 0; z-index: 2000;
             background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(5px);
@@ -70,7 +65,6 @@
         }
         .full-overlay.active { display: flex !important; }
 
-        /* Custom Toast */
         .toast-custom {
             position: fixed; bottom: 30px; right: 30px;
             transform: translateX(150%); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -78,7 +72,6 @@
         }
         .toast-custom.show { transform: translateX(0); }
         
-        /* Dashboard Cards Borders */
         .border-left-primary { border-left: 4px solid var(--bs-primary) !important; }
         .border-left-pink { border-left: 4px solid #d63384 !important; }
         .border-left-info { border-left: 4px solid var(--bs-info) !important; }
@@ -89,13 +82,13 @@
 
     <div class="full-overlay" id="lockScreen">
         <div class="card bg-body shadow-lg border-secondary-subtle rounded-4 text-center p-4 p-md-5" style="max-width: 450px; width: 90%;">
-            <div class="display-1 mb-3">🔐</div>
+            <i class="bi bi-shield-lock text-primary display-1 mb-3"></i>
             <h2 class="fw-bold text-body">Área Protegida</h2>
             <p class="text-secondary mb-4">Digite sua senha mestre para sincronizar</p>
             <input type="password" class="form-control form-control-lg text-center mb-3 bg-body-tertiary" id="unlockPassword" placeholder="Senha mestre" onkeypress="if(event.key==='Enter')unlockApp()">
             <div class="d-grid gap-2">
-                <button class="btn btn-primary btn-lg fw-bold rounded-3" onclick="unlockApp()">🔓 Desbloquear</button>
-                <button class="btn btn-outline-secondary rounded-3" onclick="skipUnlock()">Continuar offline</button>
+                <button class="btn btn-primary btn-lg fw-bold rounded-3" onclick="unlockApp()"><i class="bi bi-unlock-fill me-2"></i>Desbloquear</button>
+                <button class="btn btn-outline-secondary rounded-3" onclick="skipUnlock()"><i class="bi bi-wifi-off me-2"></i>Continuar offline</button>
             </div>
             <div class="text-danger small mt-3 fw-semibold" id="unlockError" style="display: none;"></div>
         </div>
@@ -113,46 +106,46 @@
         <header class="card shadow-sm border-0 rounded-4 mb-4">
             <div class="card-body p-4 d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
                 <div class="text-center text-md-start">
-                    <h1 class="h3 mb-1 fw-bold text-body">⚽ Fut7 Training System</h1>
+                    <h1 class="h3 mb-1 fw-bold text-body"><i class="bi bi-dribbble text-primary me-2"></i>Fut7 Training System</h1>
                     <p class="text-secondary mb-0">Gerencie seus treinos e evolução</p>
                 </div>
                 <div class="d-flex align-items-center gap-2 bg-body-tertiary border rounded-pill py-2 px-3 shadow-sm">
                     <div class="sync-indicator" id="syncIndicator"></div>
                     <span id="syncStatusText" class="small fw-semibold text-body-secondary me-2">Desconectado</span>
-                    <button class="btn btn-sm btn-primary rounded-pill px-3 fw-medium" id="syncBtn" onclick="handleSyncClick()">🔄 Sincronizar</button>
+                    <button class="btn btn-sm btn-primary rounded-pill px-3 fw-medium" id="syncBtn" onclick="handleSyncClick()"><i class="bi bi-arrow-repeat me-1"></i> Sincronizar</button>
                 </div>
             </div>
         </header>
 
         <nav class="nav nav-pills mb-4 gap-2 flex-nowrap overflow-x-auto pb-2" style="white-space: nowrap;">
-            <button class="nav-link nav-tab active rounded-pill px-4 border" onclick="showSection('treino', this)">🏃 Treino</button>
-            <button class="nav-link nav-tab rounded-pill px-4 border" onclick="showSection('dashboard', this)">📊 Dashboard</button>
-            <button class="nav-link nav-tab rounded-pill px-4 border" onclick="showSection('historico', this)">📋 Histórico</button>
-            <button class="nav-link nav-tab rounded-pill px-4 border" onclick="showSection('exercicios', this)">✏️ Exercícios</button>
-            <button class="nav-link nav-tab rounded-pill px-4 border" onclick="showSection('dicas', this)">💡 Dicas</button>
-            <button class="nav-link nav-tab rounded-pill px-4 border" onclick="showSection('config', this)">🔒 Segurança</button>
+            <button class="nav-link nav-tab active rounded-pill px-4 border" onclick="showSection('treino', this)"><i class="bi bi-person-walking me-2"></i>Treino</button>
+            <button class="nav-link nav-tab rounded-pill px-4 border" onclick="showSection('dashboard', this)"><i class="bi bi-graph-up me-2"></i>Dashboard</button>
+            <button class="nav-link nav-tab rounded-pill px-4 border" onclick="showSection('historico', this)"><i class="bi bi-clock-history me-2"></i>Histórico</button>
+            <button class="nav-link nav-tab rounded-pill px-4 border" onclick="showSection('exercicios', this)"><i class="bi bi-journal-check me-2"></i>Exercícios</button>
+            <button class="nav-link nav-tab rounded-pill px-4 border" onclick="showSection('dicas', this)"><i class="bi bi-lightbulb me-2"></i>Dicas</button>
+            <button class="nav-link nav-tab rounded-pill px-4 border" onclick="showSection('config', this)"><i class="bi bi-shield-lock me-2"></i>Segurança</button>
         </nav>
 
         <div id="treino" class="section active">
             <div class="card border-0 shadow-sm rounded-4 mb-4">
                 <div class="card-body p-4">
-                    <h4 class="card-title fw-bold mb-4 d-flex align-items-center gap-2"><span>🎯</span> Tipo de Treino</h4>
+                    <h4 class="card-title fw-bold mb-4 d-flex align-items-center gap-2"><i class="bi bi-crosshair text-primary"></i> Tipo de Treino</h4>
                     <div class="row g-3" id="trainingTypes"></div>
                 </div>
             </div>
 
             <div class="card border-0 shadow-sm rounded-4 mb-4">
                 <div class="card-body p-4">
-                    <h4 class="card-title fw-bold mb-4 d-flex align-items-center gap-2"><span>⏱️</span> Cronômetros</h4>
+                    <h4 class="card-title fw-bold mb-4 d-flex align-items-center gap-2"><i class="bi bi-stopwatch text-primary"></i> Cronômetros</h4>
                     <div class="row g-4 timer-container">
                         <div class="col-md-6">
                             <div class="card border-primary bg-primary bg-opacity-10 h-100 rounded-4">
                                 <div class="card-body text-center p-4">
-                                    <h5 class="text-primary fw-bold mb-3">⚡ Atividade</h5>
+                                    <h5 class="text-primary fw-bold mb-3"><i class="bi bi-lightning-charge-fill me-2"></i>Atividade</h5>
                                     <div class="display-3 fw-bold font-monospace mb-4 text-body" id="activityTimer">00:00:00</div>
                                     <div class="d-flex justify-content-center gap-2 flex-wrap">
-                                        <button class="btn btn-primary rounded-pill px-4 timer-btn start fw-medium" id="activityBtn" onclick="toggleTimer('activity')">▶️ Iniciar</button>
-                                        <button class="btn btn-outline-primary bg-body rounded-pill px-4 timer-btn reset fw-medium" onclick="resetTimer('activity')">🔄 Zerar</button>
+                                        <button class="btn btn-primary rounded-pill px-4 timer-btn start fw-medium" id="activityBtn" onclick="toggleTimer('activity')"><i class="bi bi-play-fill me-1"></i> Iniciar</button>
+                                        <button class="btn btn-outline-primary bg-body rounded-pill px-4 timer-btn reset fw-medium" onclick="resetTimer('activity')"><i class="bi bi-arrow-counterclockwise me-1"></i> Zerar</button>
                                     </div>
                                 </div>
                             </div>
@@ -160,11 +153,11 @@
                         <div class="col-md-6">
                             <div class="card border-success bg-success bg-opacity-10 h-100 rounded-4">
                                 <div class="card-body text-center p-4">
-                                    <h5 class="text-success fw-bold mb-3">😴 Descanso</h5>
+                                    <h5 class="text-success fw-bold mb-3"><i class="bi bi-cup-hot-fill me-2"></i>Descanso</h5>
                                     <div class="display-3 fw-bold font-monospace mb-4 text-body" id="restTimer">00:00:00</div>
                                     <div class="d-flex justify-content-center gap-2 flex-wrap">
-                                        <button class="btn btn-success rounded-pill px-4 timer-btn start fw-medium" id="restBtn" onclick="toggleTimer('rest')">▶️ Iniciar</button>
-                                        <button class="btn btn-outline-success bg-body rounded-pill px-4 timer-btn reset fw-medium" onclick="resetTimer('rest')">🔄 Zerar</button>
+                                        <button class="btn btn-success rounded-pill px-4 timer-btn start fw-medium" id="restBtn" onclick="toggleTimer('rest')"><i class="bi bi-play-fill me-1"></i> Iniciar</button>
+                                        <button class="btn btn-outline-success bg-body rounded-pill px-4 timer-btn reset fw-medium" onclick="resetTimer('rest')"><i class="bi bi-arrow-counterclockwise me-1"></i> Zerar</button>
                                     </div>
                                 </div>
                             </div>
@@ -175,7 +168,7 @@
 
             <div class="card border-0 shadow-sm rounded-4 mb-4">
                 <div class="card-body p-4">
-                    <h4 class="card-title fw-bold mb-4 d-flex align-items-center gap-2"><span>📝</span> Exercícios</h4>
+                    <h4 class="card-title fw-bold mb-4 d-flex align-items-center gap-2"><i class="bi bi-list-check text-primary"></i> Exercícios</h4>
                     <div id="exerciseList"><p class="text-secondary text-center my-4">Selecione um treino</p></div>
                     
                     <div class="mt-4 pt-3 border-top" id="progressContainer" style="display: none;">
@@ -192,16 +185,16 @@
 
             <div class="card border-0 shadow-sm rounded-4 mb-4" id="gameStatsCard" style="display: none;">
                 <div class="card-body p-4">
-                    <h4 class="card-title fw-bold mb-4 d-flex align-items-center gap-2"><span>🥅</span> Estatísticas do Jogo</h4>
+                    <h4 class="card-title fw-bold mb-4 d-flex align-items-center gap-2"><i class="bi bi-trophy-fill text-primary"></i> Estatísticas do Jogo</h4>
                     <div class="row g-4">
                         <div class="col-sm-6">
                             <div class="card border-info bg-body-tertiary h-100 rounded-4">
                                 <div class="card-body text-center p-4">
-                                    <label class="fw-bold text-info mb-3 fs-5">⚽ Gols</label>
+                                    <label class="fw-bold text-info mb-3 fs-5"><i class="bi bi-bullseye me-2"></i>Gols</label>
                                     <div class="d-flex align-items-center justify-content-center gap-3">
-                                        <button class="btn btn-info rounded-circle text-white shadow-sm fw-bold fs-4" style="width: 48px; height: 48px;" onclick="updateStat('goals', -1)">-</button>
+                                        <button class="btn btn-info rounded-circle text-white shadow-sm fw-bold fs-4" style="width: 48px; height: 48px;" onclick="updateStat('goals', -1)"><i class="bi bi-dash"></i></button>
                                         <span class="display-5 fw-bold text-body" id="goalsValue" style="min-width: 60px;">0</span>
-                                        <button class="btn btn-info rounded-circle text-white shadow-sm fw-bold fs-4" style="width: 48px; height: 48px;" onclick="updateStat('goals', 1)">+</button>
+                                        <button class="btn btn-info rounded-circle text-white shadow-sm fw-bold fs-4" style="width: 48px; height: 48px;" onclick="updateStat('goals', 1)"><i class="bi bi-plus"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -209,11 +202,11 @@
                         <div class="col-sm-6">
                             <div class="card border-success bg-body-tertiary h-100 rounded-4">
                                 <div class="card-body text-center p-4">
-                                    <label class="fw-bold text-success mb-3 fs-5">👟 Assistências</label>
+                                    <label class="fw-bold text-success mb-3 fs-5"><i class="bi bi-people-fill me-2"></i>Assistências</label>
                                     <div class="d-flex align-items-center justify-content-center gap-3">
-                                        <button class="btn btn-success rounded-circle shadow-sm fw-bold fs-4" style="width: 48px; height: 48px;" onclick="updateStat('assists', -1)">-</button>
+                                        <button class="btn btn-success rounded-circle shadow-sm fw-bold fs-4" style="width: 48px; height: 48px;" onclick="updateStat('assists', -1)"><i class="bi bi-dash"></i></button>
                                         <span class="display-5 fw-bold text-body" id="assistsValue" style="min-width: 60px;">0</span>
-                                        <button class="btn btn-success rounded-circle shadow-sm fw-bold fs-4" style="width: 48px; height: 48px;" onclick="updateStat('assists', 1)">+</button>
+                                        <button class="btn btn-success rounded-circle shadow-sm fw-bold fs-4" style="width: 48px; height: 48px;" onclick="updateStat('assists', 1)"><i class="bi bi-plus"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -224,25 +217,25 @@
 
             <div class="card border-0 shadow-sm rounded-4 mb-4">
                 <div class="card-body p-4">
-                    <h4 class="card-title fw-bold mb-4 d-flex align-items-center gap-2"><span>⭐</span> Avaliação</h4>
+                    <h4 class="card-title fw-bold mb-4 d-flex align-items-center gap-2"><i class="bi bi-star-fill text-warning"></i> Avaliação</h4>
                     <div class="d-flex flex-wrap gap-2 rating-options">
-                        <div class="rating-option badge bg-body border border-secondary-subtle text-body fs-6 py-2 px-3 rounded-pill" data-value="pessimo" onclick="selectRating(this)">😫 Péssimo</div>
-                        <div class="rating-option badge bg-body border border-secondary-subtle text-body fs-6 py-2 px-3 rounded-pill" data-value="ruim" onclick="selectRating(this)">😕 Ruim</div>
-                        <div class="rating-option badge bg-body border border-secondary-subtle text-body fs-6 py-2 px-3 rounded-pill" data-value="medio" onclick="selectRating(this)">😐 Médio</div>
-                        <div class="rating-option badge bg-body border border-secondary-subtle text-body fs-6 py-2 px-3 rounded-pill" data-value="bom" onclick="selectRating(this)">🙂 Bom</div>
-                        <div class="rating-option badge bg-body border border-secondary-subtle text-body fs-6 py-2 px-3 rounded-pill" data-value="otimo" onclick="selectRating(this)">🤩 Ótimo</div>
+                        <div class="rating-option badge bg-body border border-secondary-subtle text-body fs-6 py-2 px-3 rounded-pill" data-value="pessimo" onclick="selectRating(this)"><i class="bi bi-emoji-frown me-2"></i>Péssimo</div>
+                        <div class="rating-option badge bg-body border border-secondary-subtle text-body fs-6 py-2 px-3 rounded-pill" data-value="ruim" onclick="selectRating(this)"><i class="bi bi-emoji-expressionless me-2"></i>Ruim</div>
+                        <div class="rating-option badge bg-body border border-secondary-subtle text-body fs-6 py-2 px-3 rounded-pill" data-value="medio" onclick="selectRating(this)"><i class="bi bi-emoji-neutral me-2"></i>Médio</div>
+                        <div class="rating-option badge bg-body border border-secondary-subtle text-body fs-6 py-2 px-3 rounded-pill" data-value="bom" onclick="selectRating(this)"><i class="bi bi-emoji-smile me-2"></i>Bom</div>
+                        <div class="rating-option badge bg-body border border-secondary-subtle text-body fs-6 py-2 px-3 rounded-pill" data-value="otimo" onclick="selectRating(this)"><i class="bi bi-emoji-laughing me-2"></i>Ótimo</div>
                     </div>
                 </div>
             </div>
 
             <div class="card border-0 shadow-sm rounded-4 mb-4">
                 <div class="card-body p-4">
-                    <h4 class="card-title fw-bold mb-4 d-flex align-items-center gap-2"><span>📝</span> Observações</h4>
+                    <h4 class="card-title fw-bold mb-4 d-flex align-items-center gap-2"><i class="bi bi-card-text text-primary"></i> Observações</h4>
                     <textarea class="form-control bg-body-tertiary border-secondary-subtle rounded-3 p-3" id="observation" rows="3" placeholder="Anote como foi seu treino..."></textarea>
                 </div>
             </div>
 
-            <button class="btn btn-success w-100 py-3 mb-5 fs-5 fw-bold rounded-4 shadow" id="saveBtn" onclick="saveTraining()">💾 Salvar Treino</button>
+            <button class="btn btn-success w-100 py-3 mb-5 fs-5 fw-bold rounded-4 shadow" id="saveBtn" onclick="saveTraining()"><i class="bi bi-floppy me-2"></i>Salvar Treino</button>
         </div>
 
         <div id="dashboard" class="section">
@@ -250,7 +243,7 @@
                 <div class="col-6 col-md-3">
                     <div class="card border-0 border-left-primary bg-body shadow-sm h-100 rounded-3">
                         <div class="card-body text-center text-md-start">
-                            <div class="small text-secondary fw-semibold text-uppercase mb-1">Total Treinos</div>
+                            <div class="small text-secondary fw-semibold text-uppercase mb-1"><i class="bi bi-person-walking me-1"></i> Total Treinos</div>
                             <div class="fs-2 fw-bold text-body" id="totalTrainings">0</div>
                         </div>
                     </div>
@@ -258,7 +251,7 @@
                 <div class="col-6 col-md-3">
                     <div class="card border-0 border-left-pink bg-body shadow-sm h-100 rounded-3">
                         <div class="card-body text-center text-md-start">
-                            <div class="small text-secondary fw-semibold text-uppercase mb-1">Jogos</div>
+                            <div class="small text-secondary fw-semibold text-uppercase mb-1"><i class="bi bi-trophy me-1"></i> Jogos</div>
                             <div class="fs-2 fw-bold text-body" id="totalGames">0</div>
                         </div>
                     </div>
@@ -266,7 +259,7 @@
                 <div class="col-6 col-md-3">
                     <div class="card border-0 border-left-info bg-body shadow-sm h-100 rounded-3">
                         <div class="card-body text-center text-md-start">
-                            <div class="small text-secondary fw-semibold text-uppercase mb-1">Gols</div>
+                            <div class="small text-secondary fw-semibold text-uppercase mb-1"><i class="bi bi-bullseye me-1"></i> Gols</div>
                             <div class="fs-2 fw-bold text-body" id="totalGoals">0</div>
                         </div>
                     </div>
@@ -274,7 +267,7 @@
                 <div class="col-6 col-md-3">
                     <div class="card border-0 border-left-success bg-body shadow-sm h-100 rounded-3">
                         <div class="card-body text-center text-md-start">
-                            <div class="small text-secondary fw-semibold text-uppercase mb-1">Assistências</div>
+                            <div class="small text-secondary fw-semibold text-uppercase mb-1"><i class="bi bi-people me-1"></i> Assistências</div>
                             <div class="fs-2 fw-bold text-body" id="totalAssists">0</div>
                         </div>
                     </div>
@@ -285,7 +278,7 @@
                 <div class="col-12">
                     <div class="card border-0 shadow-sm rounded-4">
                         <div class="card-body p-4">
-                            <h4 class="fw-bold mb-4">📈 Evolução</h4>
+                            <h4 class="fw-bold mb-4"><i class="bi bi-graph-up-arrow text-primary me-2"></i>Evolução</h4>
                             <canvas id="evolutionChart"></canvas>
                         </div>
                     </div>
@@ -293,7 +286,7 @@
                 <div class="col-md-6">
                     <div class="card border-0 shadow-sm rounded-4 h-100">
                         <div class="card-body p-4">
-                            <h4 class="fw-bold mb-4">📊 Por Tipo</h4>
+                            <h4 class="fw-bold mb-4"><i class="bi bi-pie-chart-fill text-primary me-2"></i>Por Tipo</h4>
                             <canvas id="typeChart"></canvas>
                         </div>
                     </div>
@@ -301,7 +294,7 @@
                 <div class="col-md-6">
                     <div class="card border-0 shadow-sm rounded-4 h-100">
                         <div class="card-body p-4">
-                            <h4 class="fw-bold mb-4">⚽ Gols/Assistências</h4>
+                            <h4 class="fw-bold mb-4"><i class="bi bi-bar-chart-fill text-primary me-2"></i>Gols / Assistências</h4>
                             <canvas id="gameStatsChart"></canvas>
                         </div>
                     </div>
@@ -312,7 +305,7 @@
         <div id="historico" class="section">
             <div class="card border-0 shadow-sm rounded-4">
                 <div class="card-body p-4">
-                    <h4 class="card-title fw-bold mb-4 d-flex align-items-center gap-2"><span>📋</span> Histórico</h4>
+                    <h4 class="card-title fw-bold mb-4 d-flex align-items-center gap-2"><i class="bi bi-clock-history text-primary"></i> Histórico</h4>
                     <div id="historyList"><p class="text-secondary text-center my-4">Nenhum treino</p></div>
                 </div>
             </div>
@@ -321,7 +314,7 @@
         <div id="exercicios" class="section">
             <div class="card border-0 shadow-sm rounded-4">
                 <div class="card-body p-4">
-                    <h4 class="card-title fw-bold mb-4 d-flex align-items-center gap-2"><span>✏️</span> Gerenciar Exercícios</h4>
+                    <h4 class="card-title fw-bold mb-4 d-flex align-items-center gap-2"><i class="bi bi-pencil-square text-primary"></i> Gerenciar Exercícios</h4>
                     <div class="mb-4">
                         <label class="form-label fw-semibold">Tipo de Treino:</label>
                         <select class="form-select bg-body-tertiary" id="editTrainingType" onchange="loadExercisesForEdit()">
@@ -329,7 +322,7 @@
                         </select>
                     </div>
                     <div id="editExerciseList" class="mb-4"></div>
-                    <button class="btn btn-success fw-bold rounded-pill px-4" onclick="openAddExerciseModal()">➕ Adicionar</button>
+                    <button class="btn btn-success fw-bold rounded-pill px-4" onclick="openAddExerciseModal()"><i class="bi bi-plus-lg me-2"></i>Adicionar</button>
                 </div>
             </div>
         </div>
@@ -337,7 +330,7 @@
         <div id="dicas" class="section">
             <div class="card border-0 shadow-sm rounded-4">
                 <div class="card-body p-4">
-                    <h4 class="card-title fw-bold mb-4 d-flex align-items-center gap-2"><span>💡</span> Dicas</h4>
+                    <h4 class="card-title fw-bold mb-4 d-flex align-items-center gap-2"><i class="bi bi-lightbulb-fill text-warning"></i> Dicas</h4>
                     <div id="tipsContainer"></div>
                 </div>
             </div>
@@ -346,15 +339,15 @@
         <div id="config" class="section">
             <div class="card border-0 shadow-sm rounded-4">
                 <div class="card-body p-4 p-md-5">
-                    <h3 class="card-title fw-bold border-bottom pb-3 mb-4 d-flex align-items-center gap-2"><span>🔒</span> Segurança e Dados</h3>
+                    <h3 class="card-title fw-bold border-bottom pb-3 mb-4 d-flex align-items-center gap-2"><i class="bi bi-shield-lock text-primary"></i> Segurança e Dados</h3>
 
                     <div class="mb-5">
-                        <h5 class="fw-bold mb-3">📊 Status</h5>
+                        <h5 class="fw-bold mb-3"><i class="bi bi-activity text-primary me-2"></i>Status</h5>
                         <div id="securityStatus"></div>
                     </div>
 
                     <div class="mb-5 border-top pt-4">
-                        <h5 class="fw-bold mb-2">🔑 Senha Mestre</h5>
+                        <h5 class="fw-bold mb-2"><i class="bi bi-key-fill text-primary me-2"></i>Senha Mestre</h5>
                         <p class="text-secondary small mb-3">Protege seu token com criptografia AES-256.</p>
                         
                         <div class="row g-3 mb-3">
@@ -372,20 +365,20 @@
                             </div>
                         </div>
                         <div class="d-flex gap-2">
-                            <button class="btn btn-success fw-semibold rounded-pill px-4" onclick="setMasterPassword()">🔐 Definir Senha</button>
-                            <button class="btn btn-outline-danger fw-semibold rounded-pill px-4" onclick="removeMasterPassword()" id="removePasswordBtn" style="display: none;">🗑️ Remover</button>
+                            <button class="btn btn-success fw-semibold rounded-pill px-4" onclick="setMasterPassword()"><i class="bi bi-shield-check me-2"></i>Definir Senha</button>
+                            <button class="btn btn-outline-danger fw-semibold rounded-pill px-4" onclick="removeMasterPassword()" id="removePasswordBtn" style="display: none;"><i class="bi bi-trash me-2"></i>Remover</button>
                         </div>
                     </div>
 
                     <div class="mb-5 border-top pt-4">
-                        <h5 class="fw-bold mb-3">🐙 Token GitHub</h5>
+                        <h5 class="fw-bold mb-3"><i class="bi bi-github text-primary me-2"></i>Token GitHub</h5>
                         <div class="mb-3">
                             <label class="form-label small fw-semibold">Token:</label>
                             <input type="password" id="githubToken" class="form-control bg-body-tertiary" placeholder="ghp_xxxx">
                         </div>
                         <div class="d-flex gap-2 mb-4">
-                            <button class="btn btn-primary fw-semibold rounded-pill px-4" onclick="saveGitHubToken()">💾 Salvar Token</button>
-                            <button class="btn btn-outline-danger fw-semibold rounded-pill px-4" onclick="removeGitHubToken()">🗑️ Remover</button>
+                            <button class="btn btn-primary fw-semibold rounded-pill px-4" onclick="saveGitHubToken()"><i class="bi bi-floppy me-2"></i>Salvar Token</button>
+                            <button class="btn btn-outline-danger fw-semibold rounded-pill px-4" onclick="removeGitHubToken()"><i class="bi bi-trash me-2"></i>Remover</button>
                         </div>
                         <div class="alert alert-info border-info-subtle small mb-0">
                             <p class="mb-1"><strong>Como obter:</strong></p>
@@ -396,21 +389,21 @@
                     </div>
 
                     <div class="mb-5 border-top pt-4">
-                        <h5 class="fw-bold mb-3">🔄 Controles de Nuvem</h5>
+                        <h5 class="fw-bold mb-3"><i class="bi bi-cloud-sync text-primary me-2"></i>Controles de Nuvem</h5>
                         <div class="d-flex flex-wrap gap-2">
-                            <button class="btn btn-primary fw-semibold rounded-pill px-4" onclick="syncWithGitHub()">🔄 Sincronizar Inteligente</button>
-                            <button class="btn btn-outline-primary fw-semibold rounded-pill px-4" onclick="forceUpload()">⬆️ Forçar Upload</button>
-                            <button class="btn btn-outline-primary fw-semibold rounded-pill px-4" onclick="forceDownload()">⬇️ Forçar Download</button>
+                            <button class="btn btn-primary fw-semibold rounded-pill px-4" onclick="syncWithGitHub()"><i class="bi bi-arrow-repeat me-2"></i>Sincronizar Inteligente</button>
+                            <button class="btn btn-outline-primary fw-semibold rounded-pill px-4" onclick="forceUpload()"><i class="bi bi-cloud-arrow-up me-2"></i>Forçar Upload</button>
+                            <button class="btn btn-outline-primary fw-semibold rounded-pill px-4" onclick="forceDownload()"><i class="bi bi-cloud-arrow-down me-2"></i>Forçar Download</button>
                         </div>
                     </div>
 
                     <div class="border-top pt-4">
-                        <h5 class="fw-bold mb-3 text-danger">🗄️ Backup Local & Dados</h5>
+                        <h5 class="fw-bold mb-3 text-danger"><i class="bi bi-database-down me-2"></i>Backup Local & Dados</h5>
                         <div class="d-flex flex-wrap gap-2">
-                            <button class="btn btn-secondary fw-semibold rounded-pill px-4" onclick="exportLocalData()">📤 Exportar JSON</button>
-                            <button class="btn btn-secondary fw-semibold rounded-pill px-4" onclick="document.getElementById('importFile').click()">📥 Importar JSON</button>
+                            <button class="btn btn-secondary fw-semibold rounded-pill px-4" onclick="exportLocalData()"><i class="bi bi-file-earmark-arrow-down me-2"></i>Exportar JSON</button>
+                            <button class="btn btn-secondary fw-semibold rounded-pill px-4" onclick="document.getElementById('importFile').click()"><i class="bi bi-file-earmark-arrow-up me-2"></i>Importar JSON</button>
                             <input type="file" id="importFile" accept=".json" style="display:none" onchange="importLocalData(event)">
-                            <button class="btn btn-danger fw-semibold rounded-pill px-4 ms-auto" onclick="clearAllData()">⚠️ Apagar Tudo</button>
+                            <button class="btn btn-danger fw-semibold rounded-pill px-4 ms-auto" onclick="clearAllData()"><i class="bi bi-exclamation-triangle me-2"></i>Apagar Tudo</button>
                         </div>
                     </div>
 
@@ -481,15 +474,15 @@
             return new TextDecoder().decode(decrypted);
         }
 
-        // Default Data
+        // Default Data com icones do bootstrap
         const defaultTypes = [
-            { id: 'jogo', name: 'JOGO', icon: '⚽', desc: 'Partida' },
-            { id: 'recuperacao', name: 'Recuperação', icon: '🔄', desc: 'Ativa' },
-            { id: 'hiit_agilidade', name: 'HIIT + Agilidade', icon: '⚡', desc: 'Explosão' },
-            { id: 'resistencia', name: 'Resistência', icon: '🏃', desc: 'Aeróbica' },
-            { id: 'forca_sprints', name: 'Força + Sprints', icon: '💪', desc: 'Potência' },
-            { id: 'hiit_intenso', name: 'HIIT Intenso', icon: '🔥', desc: 'Alta intensidade' },
-            { id: 'descanso', name: 'Descanso', icon: '😴', desc: 'Recuperação' }
+            { id: 'jogo', name: 'JOGO', icon: '<i class="bi bi-play-circle-fill text-primary"></i>', desc: 'Partida' },
+            { id: 'recuperacao', name: 'Recuperação', icon: '<i class="bi bi-heart-pulse text-success"></i>', desc: 'Ativa' },
+            { id: 'hiit_agilidade', name: 'HIIT + Agilidade', icon: '<i class="bi bi-lightning-charge-fill text-warning"></i>', desc: 'Explosão' },
+            { id: 'resistencia', name: 'Resistência', icon: '<i class="bi bi-activity text-danger"></i>', desc: 'Aeróbica' },
+            { id: 'forca_sprints', name: 'Força + Sprints', icon: '<i class="bi bi-universal-access-circle text-info"></i>', desc: 'Potência' },
+            { id: 'hiit_intenso', name: 'HIIT Intenso', icon: '<i class="bi bi-fire text-danger"></i>', desc: 'Alta intensidade' },
+            { id: 'descanso', name: 'Descanso', icon: '<i class="bi bi-cup-hot-fill text-secondary"></i>', desc: 'Recuperação' }
         ];
 
         const defaultExercises = {
@@ -639,15 +632,14 @@
             const c = document.getElementById('securityStatus');
             if (!c) return;
             
-            // Adaptado para as badges e alerts do Bootstrap 5
             let h = '<div class="d-flex flex-wrap gap-2 mb-3">';
-            h += hasPassword() ? '<span class="badge rounded-pill bg-success bg-opacity-10 border border-success text-success p-2 px-3 fw-medium">🔐 Senha Ativa</span>' : '<span class="badge rounded-pill bg-warning bg-opacity-10 border border-warning text-warning p-2 px-3 fw-medium">⚠️ Sem Senha</span>';
-            h += hasToken() ? '<span class="badge rounded-pill bg-success bg-opacity-10 border border-success text-success p-2 px-3 fw-medium">🔒 Token Criptografado</span>' : '<span class="badge rounded-pill bg-warning bg-opacity-10 border border-warning text-warning p-2 px-3 fw-medium">⚠️ Sem Token</span>';
-            if (isUnlocked && hasToken()) h += '<span class="badge rounded-pill bg-info bg-opacity-10 border border-info text-info p-2 px-3 fw-medium">🔓 Desbloqueado</span>';
+            h += hasPassword() ? '<span class="badge rounded-pill bg-success bg-opacity-10 border border-success text-success p-2 px-3 fw-medium"><i class="bi bi-shield-lock-fill me-1"></i> Senha Ativa</span>' : '<span class="badge rounded-pill bg-warning bg-opacity-10 border border-warning text-warning p-2 px-3 fw-medium"><i class="bi bi-exclamation-triangle-fill me-1"></i> Sem Senha</span>';
+            h += hasToken() ? '<span class="badge rounded-pill bg-success bg-opacity-10 border border-success text-success p-2 px-3 fw-medium"><i class="bi bi-lock-fill me-1"></i> Token Criptografado</span>' : '<span class="badge rounded-pill bg-warning bg-opacity-10 border border-warning text-warning p-2 px-3 fw-medium"><i class="bi bi-exclamation-triangle-fill me-1"></i> Sem Token</span>';
+            if (isUnlocked && hasToken()) h += '<span class="badge rounded-pill bg-info bg-opacity-10 border border-info text-info p-2 px-3 fw-medium"><i class="bi bi-unlock-fill me-1"></i> Desbloqueado</span>';
             h += '</div>';
             
-            if (hasPassword() && hasToken()) h += '<div class="alert alert-success py-2 px-3 small border-success-subtle mb-0">✅ Token protegido com AES-256</div>';
-            else if (!hasPassword()) h += '<div class="alert alert-warning py-2 px-3 small border-warning-subtle mb-0">⚠️ Configure uma senha mestre</div>';
+            if (hasPassword() && hasToken()) h += '<div class="alert alert-success py-2 px-3 small border-success-subtle mb-0"><i class="bi bi-check-circle-fill me-2"></i> Token protegido com AES-256</div>';
+            else if (!hasPassword()) h += '<div class="alert alert-warning py-2 px-3 small border-warning-subtle mb-0"><i class="bi bi-exclamation-circle-fill me-2"></i> Configure uma senha mestre</div>';
             
             c.innerHTML = h;
             
@@ -689,7 +681,7 @@
             if (txt) txt.textContent = text;
             if (btn) { 
                 btn.className = status === 'locked' ? 'btn btn-sm btn-warning rounded-pill px-3 fw-medium text-dark' : 'btn btn-sm btn-primary rounded-pill px-3 fw-medium'; 
-                btn.innerHTML = status === 'locked' ? '🔓 Desbloquear' : '🔄 Sincronizar'; 
+                btn.innerHTML = status === 'locked' ? '<i class="bi bi-unlock me-1"></i> Desbloquear' : '<i class="bi bi-arrow-repeat me-1"></i> Sincronizar'; 
             }
         }
 
@@ -814,7 +806,6 @@
         function renderTrainingTypes() {
             const c = document.getElementById('trainingTypes');
             if (!c) return;
-            // Adaptado string HTML para estrutura grid/cards Bootstrap
             c.innerHTML = getTypes().map(t => `<div class="col-sm-6 col-lg-3"><div class="training-type-btn card h-100 bg-body-tertiary shadow-sm rounded-4 p-3 border-secondary-subtle" data-id="${t.id}" onclick="selectTrainingType('${t.id}')"><div class="fs-1 mb-2">${t.icon}</div><div class="fw-bold fs-5 text-body">${t.name}</div><div class="small text-secondary mt-1">${t.desc}</div></div></div>`).join('');
         }
 
@@ -836,7 +827,6 @@
             if (!ex.length) { c.innerHTML = '<p class="text-secondary text-center my-4">Nenhum exercício</p>'; if (p) p.style.display = 'none'; return; }
             if (p) p.style.display = 'block';
             
-            // Adaptado para Bootstrap
             c.innerHTML = ex.map((e, i) => `<div class="exercise-item card bg-body-tertiary border-secondary-subtle mb-2 rounded-3" data-index="${i}"><div class="card-body p-3 d-flex align-items-center gap-3"><input class="form-check-input mt-0 fs-4 flex-shrink-0" type="checkbox" onchange="toggleExercise(${i})"><div class="flex-grow-1"><div class="fw-semibold text-body">${e.name}</div><div class="small text-secondary">${e.details}</div></div></div></div>`).join('');
             
             updateProgress();
@@ -865,11 +855,11 @@
         function toggleTimer(type) {
             const btn = document.getElementById(type + 'Btn');
             if (type === 'activity') {
-                if (state.activityRunning) { clearInterval(state.activityInterval); state.activityRunning = false; if (btn) btn.innerHTML = '▶️ Iniciar'; }
-                else { state.activityInterval = setInterval(() => { state.activityTime++; updateTimerDisplay('activity'); }, 1000); state.activityRunning = true; if (btn) btn.innerHTML = '⏸️ Pausar'; }
+                if (state.activityRunning) { clearInterval(state.activityInterval); state.activityRunning = false; if (btn) btn.innerHTML = '<i class="bi bi-play-fill me-1"></i> Iniciar'; }
+                else { state.activityInterval = setInterval(() => { state.activityTime++; updateTimerDisplay('activity'); }, 1000); state.activityRunning = true; if (btn) btn.innerHTML = '<i class="bi bi-pause-fill me-1"></i> Pausar'; }
             } else {
-                if (state.restRunning) { clearInterval(state.restInterval); state.restRunning = false; if (btn) btn.innerHTML = '▶️ Iniciar'; }
-                else { state.restInterval = setInterval(() => { state.restTime++; updateTimerDisplay('rest'); }, 1000); state.restRunning = true; if (btn) btn.innerHTML = '⏸️ Pausar'; }
+                if (state.restRunning) { clearInterval(state.restInterval); state.restRunning = false; if (btn) btn.innerHTML = '<i class="bi bi-play-fill me-1"></i> Iniciar'; }
+                else { state.restInterval = setInterval(() => { state.restTime++; updateTimerDisplay('rest'); }, 1000); state.restRunning = true; if (btn) btn.innerHTML = '<i class="bi bi-pause-fill me-1"></i> Pausar'; }
             }
         }
 
@@ -877,7 +867,7 @@
             const btn = document.getElementById(type + 'Btn');
             if (type === 'activity') { clearInterval(state.activityInterval); state.activityTime = 0; state.activityRunning = false; }
             else { clearInterval(state.restInterval); state.restTime = 0; state.restRunning = false; }
-            if (btn) btn.innerHTML = '▶️ Iniciar';
+            if (btn) btn.innerHTML = '<i class="bi bi-play-fill me-1"></i> Iniciar';
             updateTimerDisplay(type);
         }
 
@@ -904,7 +894,7 @@
             if (!state.selectedTrainingType) return showToast('Selecione treino', 'error');
             if (!state.rating) return showToast('Selecione avaliação', 'error');
             const btn = document.getElementById('saveBtn');
-            if (btn) { btn.disabled = true; btn.textContent = '⏳ Salvando...'; }
+            if (btn) { btn.disabled = true; btn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Salvando...'; }
             const training = {
                 id: Date.now(),
                 date: new Date().toISOString(),
@@ -930,7 +920,7 @@
             updateDashboardNumbers();
             renderHistory();
             generateTips();
-            if (btn) { btn.disabled = false; btn.textContent = '💾 Salvar Treino'; }
+            if (btn) { btn.disabled = false; btn.innerHTML = '<i class="bi bi-floppy me-2"></i>Salvar Treino'; }
             showToast('Treino salvo!');
         }
 
@@ -974,9 +964,6 @@
         function renderCharts() {
             const h = getHistory();
             const rv = { pessimo: 1, ruim: 2, medio: 3, bom: 4, otimo: 5 };
-
-            // O ChartJS lida muito bem com tema escuro automático se passarmos as cores, 
-            // no código original estavam fixadas pra combinar, manteremos a paleta parecida.
 
             // Evolution
             const ec = document.getElementById('evolutionChart');
@@ -1028,8 +1015,7 @@
             const colors = { pessimo: 'var(--bs-danger)', ruim: '#fd7e14', medio: 'var(--bs-warning)', bom: 'var(--bs-success)', otimo: 'var(--bs-primary)' };
             const labels = { pessimo: 'Péssimo', ruim: 'Ruim', medio: 'Médio', bom: 'Bom', otimo: 'Ótimo' };
             
-            // Adaptado string HTML para estrutura grid/cards Bootstrap
-            c.innerHTML = h.map(t => `<div class="card bg-body-tertiary border-secondary-subtle mb-3 rounded-4 shadow-sm"><div class="card-body p-3 p-md-4 d-flex justify-content-between align-items-center flex-wrap gap-3"><div><div class="fw-bold text-body mb-1">${new Date(t.date).toLocaleDateString('pt-BR')} <span class="text-secondary fw-normal small ms-2">${new Date(t.date).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span></div><div class="small fw-semibold text-secondary"><span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary-subtle py-1 px-2 me-2">${t.typeName||t.type}</span>${t.type==='jogo'?`<span class="badge bg-primary bg-opacity-10 text-primary border border-primary-subtle py-1 px-2 me-1">⚽ ${t.goals}</span> <span class="badge bg-success bg-opacity-10 text-success border border-success-subtle py-1 px-2">👟 ${t.assists}</span>`:''}</div></div><div class="d-flex align-items-center gap-3"><span class="badge rounded-pill py-2 px-3 text-white shadow-sm" style="background:${colors[t.rating]||'#6c757d'}">${labels[t.rating]||t.rating}</span><button class="btn btn-outline-danger btn-sm rounded-circle shadow-sm" style="width: 36px; height: 36px;" onclick="deleteTraining(${t.id})" title="Excluir">🗑️</button></div></div></div>`).join('');
+            c.innerHTML = h.map(t => `<div class="card bg-body-tertiary border-secondary-subtle mb-3 rounded-4 shadow-sm"><div class="card-body p-3 p-md-4 d-flex justify-content-between align-items-center flex-wrap gap-3"><div><div class="fw-bold text-body mb-1">${new Date(t.date).toLocaleDateString('pt-BR')} <span class="text-secondary fw-normal small ms-2">${new Date(t.date).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span></div><div class="small fw-semibold text-secondary"><span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary-subtle py-1 px-2 me-2">${t.typeName||t.type}</span>${t.type==='jogo'?`<span class="badge bg-primary bg-opacity-10 text-primary border border-primary-subtle py-1 px-2 me-1"><i class="bi bi-bullseye me-1"></i> ${t.goals}</span> <span class="badge bg-success bg-opacity-10 text-success border border-success-subtle py-1 px-2"><i class="bi bi-people-fill me-1"></i> ${t.assists}</span>`:''}</div></div><div class="d-flex align-items-center gap-3"><span class="badge rounded-pill py-2 px-3 text-white shadow-sm" style="background:${colors[t.rating]||'#6c757d'}">${labels[t.rating]||t.rating}</span><button class="btn btn-outline-danger btn-sm rounded-circle shadow-sm" style="width: 36px; height: 36px;" onclick="deleteTraining(${t.id})" title="Excluir"><i class="bi bi-trash"></i></button></div></div></div>`).join('');
         }
 
         async function deleteTraining(id) {
@@ -1060,8 +1046,7 @@
             if (!id) { c.innerHTML = ''; return; }
             const ex = getExercises()[id] || [];
             
-            // Adaptado para os inputs do Bootstrap e alinhamento do Flexbox
-            c.innerHTML = ex.map((e, i) => `<div class="d-flex flex-wrap flex-sm-nowrap gap-2 mb-3"><input type="text" class="form-control bg-body-tertiary" value="${e.name}" placeholder="Nome" onchange="updateExercise('${id}',${i},'name',this.value)"><input type="text" class="form-control bg-body-tertiary" value="${e.details}" placeholder="Detalhes" onchange="updateExercise('${id}',${i},'details',this.value)"><button class="btn btn-outline-danger shadow-sm px-3" onclick="deleteExercise('${id}',${i})" title="Excluir">🗑️</button></div>`).join('');
+            c.innerHTML = ex.map((e, i) => `<div class="d-flex flex-wrap flex-sm-nowrap gap-2 mb-3"><input type="text" class="form-control bg-body-tertiary" value="${e.name}" placeholder="Nome" onchange="updateExercise('${id}',${i},'name',this.value)"><input type="text" class="form-control bg-body-tertiary" value="${e.details}" placeholder="Detalhes" onchange="updateExercise('${id}',${i},'details',this.value)"><button class="btn btn-outline-danger shadow-sm px-3" onclick="deleteExercise('${id}',${i})" title="Excluir"><i class="bi bi-trash"></i></button></div>`).join('');
         }
 
         async function updateExercise(tid, i, f, v) {
@@ -1102,12 +1087,11 @@
             if (!c) return;
             const h = getHistory();
             const tips = [];
-            if (!h.length) tips.push({ t: '🚀 Comece!', p: 'Registre seu primeiro treino!' });
-            tips.push({ t: '💧 Hidratação', p: 'Beba 2-3L de água por dia.' });
-            tips.push({ t: '😴 Sono', p: 'Durma 7-8h por noite.' });
-            tips.push({ t: '🍌 Pré-treino', p: 'Coma leve 30min antes do treino.' });
+            if (!h.length) tips.push({ t: '<i class="bi bi-rocket-takeoff text-primary me-2"></i>Comece!', p: 'Registre seu primeiro treino!' });
+            tips.push({ t: '<i class="bi bi-droplet-fill text-info me-2"></i>Hidratação', p: 'Beba 2-3L de água por dia.' });
+            tips.push({ t: '<i class="bi bi-moon-stars-fill text-secondary me-2"></i>Sono', p: 'Durma 7-8h por noite.' });
+            tips.push({ t: '<i class="bi bi-apple text-danger me-2"></i>Pré-treino', p: 'Coma leve 30min antes do treino.' });
             
-            // Estilização das dicas em cards do Bootstrap
             c.innerHTML = tips.map(t => `<div class="card border-0 border-start border-4 border-primary bg-body-tertiary mb-3 shadow-sm"><div class="card-body py-3"><h5 class="text-primary fw-bold mb-1">${t.t}</h5><p class="text-secondary mb-0 small">${t.p}</p></div></div>`).join('');
         }
 
@@ -1126,9 +1110,8 @@
         function showToast(msg, type = 'success') {
             const t = document.getElementById('toast');
             if (!t) return;
-            t.textContent = msg;
+            t.innerHTML = (type === 'error' ? '<i class="bi bi-x-circle me-2"></i>' : type === 'warning' ? '<i class="bi bi-exclamation-triangle me-2"></i>' : '<i class="bi bi-check-circle me-2"></i>') + msg;
             
-            // Limpa as classes de background antigas e aplica a nova baseada no type
             t.classList.remove('text-bg-success', 'text-bg-danger', 'text-bg-warning');
             
             if(type === 'error') t.classList.add('text-bg-danger');
