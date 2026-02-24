@@ -40,7 +40,6 @@
             margin: 0 auto;
         }
 
-        /* Header */
         .header {
             background: var(--card-bg);
             border-radius: 16px;
@@ -48,19 +47,63 @@
             margin-bottom: 20px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
             border: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
-        .header h1 {
+        .header-left h1 {
             color: var(--text);
             font-size: 28px;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
 
-        .header p {
+        .header-left p {
             color: var(--text-muted);
         }
 
-        /* Navigation */
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: var(--hover-bg);
+            border-radius: 25px;
+            border: 1px solid var(--border);
+        }
+
+        .sync-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--text-muted);
+        }
+
+        .sync-indicator.connected { background: var(--success); animation: pulse 2s infinite; }
+        .sync-indicator.syncing { background: var(--warning); animation: pulse 0.5s infinite; }
+        .sync-indicator.error { background: var(--danger); }
+        .sync-indicator.locked { background: var(--warning); }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .sync-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .sync-btn:hover { background: var(--primary-dark); }
+        .sync-btn.unlock { background: var(--warning); color: #000; }
+
         .nav-tabs {
             display: flex;
             gap: 10px;
@@ -81,7 +124,6 @@
         }
 
         .nav-tab:hover {
-            transform: translateY(-2px);
             border-color: var(--primary);
             color: var(--text);
         }
@@ -92,13 +134,11 @@
             border-color: var(--primary);
         }
 
-        /* Cards */
         .card {
             background: var(--card-bg);
             border-radius: 16px;
             padding: 25px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
             border: 1px solid var(--border);
         }
 
@@ -111,16 +151,12 @@
             gap: 10px;
         }
 
-        .card-title span {
-            font-size: 24px;
-        }
+        .card-title span { font-size: 24px; }
 
-        /* Training Type Selector */
         .training-types {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
-            margin-bottom: 20px;
         }
 
         .training-type-btn {
@@ -143,26 +179,9 @@
             background: rgba(88, 166, 255, 0.1);
         }
 
-        .training-type-btn .icon {
-            font-size: 28px;
-            margin-bottom: 8px;
-        }
-
-        .training-type-btn .name {
-            font-weight: 600;
-            color: var(--text);
-            margin-bottom: 4px;
-        }
-
-        .training-type-btn .desc {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-
-        /* Exercise List */
-        .exercise-list {
-            margin-top: 20px;
-        }
+        .training-type-btn .icon { font-size: 28px; margin-bottom: 8px; }
+        .training-type-btn .name { font-weight: 600; color: var(--text); margin-bottom: 4px; }
+        .training-type-btn .desc { font-size: 12px; color: var(--text-muted); }
 
         .exercise-item {
             display: flex;
@@ -172,54 +191,30 @@
             background: var(--hover-bg);
             border-radius: 10px;
             margin-bottom: 10px;
-            transition: all 0.3s;
             border: 1px solid var(--border);
         }
 
-        .exercise-item:hover {
-            border-color: var(--primary);
-        }
-
-        .exercise-item input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-            accent-color: var(--primary);
-        }
-
-        .exercise-item .exercise-info {
-            flex: 1;
-        }
-
-        .exercise-item .exercise-name {
-            font-weight: 500;
-            color: var(--text);
-        }
-
-        .exercise-item .exercise-details {
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-
-        .exercise-item input[type="text"],
-        .exercise-item input[type="number"] {
-            padding: 8px 12px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 14px;
-            width: 100px;
-            background: var(--bg-color);
-            color: var(--text);
-        }
+        .exercise-item:hover { border-color: var(--primary); }
+        .exercise-item input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--primary); }
+        .exercise-item .exercise-info { flex: 1; }
+        .exercise-item .exercise-name { font-weight: 500; color: var(--text); }
+        .exercise-item .exercise-details { font-size: 13px; color: var(--text-muted); }
 
         .exercise-item.completed {
             background: rgba(35, 134, 54, 0.2);
             border-color: var(--success);
-            text-decoration: line-through;
             opacity: 0.7;
         }
 
-        /* Timer Section */
+        .exercise-item input[type="text"] {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--bg-color);
+            color: var(--text);
+            flex: 1;
+        }
+
         .timer-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -232,22 +227,11 @@
             border-radius: 16px;
             background: var(--hover-bg);
             border: 1px solid var(--primary);
-            color: var(--text);
         }
 
-        .timer-box.rest {
-            border-color: var(--success);
-        }
-
-        .timer-box h3 {
-            margin-bottom: 15px;
-            font-size: 18px;
-            color: var(--primary);
-        }
-
-        .timer-box.rest h3 {
-            color: var(--success);
-        }
+        .timer-box.rest { border-color: var(--success); }
+        .timer-box h3 { margin-bottom: 15px; font-size: 18px; color: var(--primary); }
+        .timer-box.rest h3 { color: var(--success); }
 
         .timer-display {
             font-size: 56px;
@@ -257,12 +241,7 @@
             color: var(--text);
         }
 
-        .timer-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
+        .timer-buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 
         .timer-btn {
             padding: 12px 24px;
@@ -271,35 +250,16 @@
             cursor: pointer;
             font-size: 14px;
             font-weight: 500;
-            transition: all 0.3s;
         }
 
-        .timer-btn.start {
-            background: var(--primary);
-            color: #ffffff;
-        }
+        .timer-btn.start { background: var(--primary); color: #ffffff; }
+        .timer-btn.reset { background: var(--hover-bg); color: var(--text); border: 1px solid var(--border); }
+        .timer-btn:hover { transform: scale(1.05); }
 
-        .timer-btn.pause {
-            background: var(--warning);
-            color: #000000;
-        }
-
-        .timer-btn.reset {
-            background: var(--hover-bg);
-            color: var(--text);
-            border: 1px solid var(--border);
-        }
-
-        .timer-btn:hover {
-            transform: scale(1.05);
-        }
-
-        /* Game Stats */
         .game-stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 20px;
-            margin-bottom: 20px;
         }
 
         .stat-box {
@@ -307,30 +267,14 @@
             padding: 20px;
             background: var(--hover-bg);
             border-radius: 12px;
-            color: var(--text);
             border: 1px solid var(--border);
         }
 
-        .stat-box.goals {
-            border-color: var(--primary);
-        }
+        .stat-box.goals { border-color: var(--primary); }
+        .stat-box.assists { border-color: var(--success); }
+        .stat-box label { display: block; margin-bottom: 10px; font-weight: 500; }
 
-        .stat-box.assists {
-            border-color: var(--success);
-        }
-
-        .stat-box label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: 500;
-        }
-
-        .stat-input {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
+        .stat-input { display: flex; align-items: center; justify-content: center; gap: 10px; }
 
         .stat-btn {
             width: 36px;
@@ -341,101 +285,43 @@
             color: #ffffff;
             font-size: 20px;
             cursor: pointer;
-            transition: all 0.3s;
         }
 
-        .stat-btn:hover {
-            background: var(--primary-dark);
-        }
+        .stat-value { font-size: 32px; font-weight: bold; min-width: 50px; }
 
-        .stat-value {
-            font-size: 32px;
-            font-weight: bold;
-            min-width: 50px;
-            color: var(--text);
-        }
-
-        /* Rating */
-        .rating-container {
-            margin: 20px 0;
-        }
-
-        .rating-options {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
+        .rating-options { display: flex; gap: 10px; flex-wrap: wrap; }
 
         .rating-option {
             padding: 12px 20px;
             border: 1px solid var(--border);
             border-radius: 25px;
             cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 500;
             background: var(--hover-bg);
             color: var(--text);
         }
 
-        .rating-option:hover {
-            transform: scale(1.05);
-            border-color: var(--primary);
-        }
+        .rating-option:hover { border-color: var(--primary); }
+        .rating-option.selected { color: white; }
+        .rating-option[data-value="pessimo"].selected { background: var(--danger); border-color: var(--danger); }
+        .rating-option[data-value="ruim"].selected { background: #da3633; border-color: #da3633; }
+        .rating-option[data-value="medio"].selected { background: var(--warning); border-color: var(--warning); color: #000; }
+        .rating-option[data-value="bom"].selected { background: var(--success); border-color: var(--success); }
+        .rating-option[data-value="otimo"].selected { background: var(--primary); border-color: var(--primary); }
 
-        .rating-option.selected {
-            color: white;
-        }
-
-        .rating-option[data-value="pessimo"].selected {
-            background: var(--danger);
-            border-color: var(--danger);
-        }
-
-        .rating-option[data-value="ruim"].selected {
-            background: #da3633;
-            border-color: #da3633;
-        }
-
-        .rating-option[data-value="medio"].selected {
-            background: var(--warning);
-            border-color: var(--warning);
-            color: #000000;
-        }
-
-        .rating-option[data-value="bom"].selected {
-            background: var(--success);
-            border-color: var(--success);
-        }
-
-        .rating-option[data-value="otimo"].selected {
-            background: var(--primary);
-            border-color: var(--primary);
-        }
-
-        /* Observation */
         .observation-box {
             width: 100%;
             min-height: 120px;
             padding: 15px;
             border: 1px solid var(--border);
             border-radius: 12px;
-            font-size: 14px;
-            resize: vertical;
-            font-family: inherit;
             background: var(--bg-color);
             color: var(--text);
+            resize: vertical;
+            font-family: inherit;
         }
 
-        .observation-box:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
+        .observation-box:focus { outline: none; border-color: var(--primary); }
 
-        .observation-box::placeholder {
-            color: var(--text-muted);
-        }
-
-        /* Save Button */
         .save-btn {
             width: 100%;
             padding: 18px;
@@ -446,20 +332,15 @@
             font-size: 18px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
             margin-top: 20px;
         }
 
-        .save-btn:hover {
-            transform: translateY(-2px);
-            background: var(--success-light);
-            box-shadow: 0 8px 25px rgba(35, 134, 54, 0.4);
-        }
+        .save-btn:hover { background: var(--success-light); }
+        .save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* Dashboard */
         .dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
             margin-bottom: 20px;
         }
@@ -467,40 +348,17 @@
         .dashboard-stat {
             padding: 25px;
             border-radius: 16px;
-            color: var(--text);
-            position: relative;
-            overflow: hidden;
             background: var(--card-bg);
             border: 1px solid var(--border);
         }
 
-        .dashboard-stat.total-trainings {
-            border-left: 4px solid var(--primary);
-        }
+        .dashboard-stat.total-trainings { border-left: 4px solid var(--primary); }
+        .dashboard-stat.total-games { border-left: 4px solid #f778ba; }
+        .dashboard-stat.total-goals { border-left: 4px solid #79c0ff; }
+        .dashboard-stat.total-assists { border-left: 4px solid var(--success); }
 
-        .dashboard-stat.total-games {
-            border-left: 4px solid #f778ba;
-        }
-
-        .dashboard-stat.total-goals {
-            border-left: 4px solid #79c0ff;
-        }
-
-        .dashboard-stat.total-assists {
-            border-left: 4px solid var(--success);
-        }
-
-        .dashboard-stat .stat-label {
-            font-size: 14px;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-        }
-
-        .dashboard-stat .stat-number {
-            font-size: 36px;
-            font-weight: bold;
-            color: var(--text);
-        }
+        .dashboard-stat .stat-label { font-size: 14px; color: var(--text-muted); margin-bottom: 8px; }
+        .dashboard-stat .stat-number { font-size: 36px; font-weight: bold; }
 
         .chart-container {
             background: var(--card-bg);
@@ -510,11 +368,8 @@
             border: 1px solid var(--border);
         }
 
-        .chart-container h3 {
-            color: var(--text);
-        }
+        .chart-container h3 { color: var(--text); margin-bottom: 20px; }
 
-        /* History */
         .history-item {
             display: flex;
             justify-content: space-between;
@@ -524,19 +379,14 @@
             border-radius: 10px;
             margin-bottom: 10px;
             border: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
-        .history-item .date {
-            font-weight: 600;
-            color: var(--text);
-        }
+        .history-item .date { font-weight: 600; color: var(--text); }
+        .history-item .type { font-size: 13px; color: var(--text-muted); }
 
-        .history-item .type {
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-
-        .history-item .rating-badge {
+        .rating-badge {
             padding: 5px 12px;
             border-radius: 15px;
             font-size: 12px;
@@ -544,23 +394,13 @@
             color: white;
         }
 
-        .history-item .delete-btn {
+        .delete-btn {
             background: var(--danger);
             color: white;
             border: none;
             padding: 8px 12px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 12px;
-        }
-
-        .history-item .delete-btn:hover {
-            background: #da3633;
-        }
-
-        /* Tips */
-        .tips-container {
-            margin-top: 20px;
         }
 
         .tip-card {
@@ -571,18 +411,84 @@
             margin-bottom: 15px;
         }
 
-        .tip-card h4 {
-            color: var(--primary);
-            margin-bottom: 8px;
+        .tip-card h4 { color: var(--primary); margin-bottom: 8px; }
+        .tip-card p { color: var(--text-muted); font-size: 14px; line-height: 1.6; }
+
+        .config-section {
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid var(--border);
         }
 
-        .tip-card p {
-            color: var(--text-muted);
-            font-size: 14px;
-            line-height: 1.6;
+        .config-section h3 { color: var(--text); margin-bottom: 15px; }
+        .config-group { display: flex; gap: 10px; flex-wrap: wrap; }
+
+        .config-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 12px 15px;
+            background: var(--bg-color);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
         }
 
-        /* Exercise Editor Modal */
+        .config-input:focus { outline: none; border-color: var(--primary); }
+
+        .config-btn {
+            padding: 12px 24px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .config-btn:hover { background: var(--primary-dark); }
+        .config-btn.danger { background: var(--danger); }
+        .config-btn.success { background: var(--success); }
+
+        .config-info {
+            padding: 15px;
+            background: rgba(88, 166, 255, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .config-info.success { background: rgba(35, 134, 54, 0.1); border-color: var(--success); }
+        .config-info.warning { background: rgba(210, 153, 34, 0.1); border-color: var(--warning); }
+        .config-info p { color: var(--text-muted); font-size: 13px; line-height: 1.6; margin-bottom: 5px; }
+        .config-info code { background: var(--bg-color); padding: 2px 6px; border-radius: 4px; color: var(--primary); }
+        .config-info a { color: var(--primary); }
+
+        .security-badge {
+            display: inline-flex;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .security-badge.secure { background: rgba(35, 134, 54, 0.2); color: var(--success); }
+        .security-badge.warning { background: rgba(210, 153, 34, 0.2); color: var(--warning); }
+
+        .password-strength { margin-top: 10px; }
+        .strength-bar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; margin-bottom: 5px; }
+        .strength-fill { height: 100%; width: 0%; transition: all 0.3s; }
+        .strength-text { font-size: 12px; color: var(--text-muted); }
+
+        .progress-container { margin-top: 15px; }
+        .progress-label { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 14px; color: var(--text-muted); }
+        .progress-bar { height: 10px; background: var(--border); border-radius: 5px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--primary); border-radius: 5px; transition: width 0.5s; }
+
+        .section { display: none; }
+        .section.active { display: block; }
+
         .modal {
             display: none;
             position: fixed;
@@ -590,81 +496,36 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0,0,0,0.8);
             z-index: 1000;
             justify-content: center;
             align-items: center;
             padding: 20px;
         }
 
-        .modal.active {
-            display: flex;
-        }
+        .modal.active { display: flex; }
 
         .modal-content {
             background: var(--card-bg);
             border-radius: 16px;
             padding: 30px;
-            max-width: 600px;
+            max-width: 500px;
             width: 100%;
-            max-height: 80vh;
-            overflow-y: auto;
             border: 1px solid var(--border);
         }
 
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h3 { color: var(--text); }
+        .modal-close { background: none; border: none; font-size: 28px; cursor: pointer; color: var(--text-muted); }
 
-        .modal-header h3 {
-            color: var(--text);
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 28px;
-            cursor: pointer;
-            color: var(--text-muted);
-        }
-
-        .modal-close:hover {
-            color: var(--text);
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: var(--text);
-        }
-
-        .form-group input,
-        .form-group select {
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--text); }
+        .form-group input, .form-group select {
             width: 100%;
             padding: 12px;
             border: 1px solid var(--border);
             border-radius: 8px;
-            font-size: 14px;
             background: var(--bg-color);
-            color: var(--text);
-        }
-
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        .form-group select option {
-            background: var(--card-bg);
             color: var(--text);
         }
 
@@ -675,66 +536,94 @@
             padding: 12px 24px;
             border-radius: 8px;
             cursor: pointer;
-            font-weight: 500;
         }
 
-        .btn-add:hover {
-            background: var(--success-light);
-        }
-
-        /* Section visibility */
-        .section {
-            display: none;
-        }
-
-        .section.active {
-            display: block;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .timer-display {
-                font-size: 40px;
-            }
-            
-            .header h1 {
-                font-size: 22px;
-            }
-            
-            .nav-tab {
-                padding: 10px 16px;
-                font-size: 13px;
-            }
-        }
-
-        /* Progress bar */
-        .progress-container {
-            margin-top: 15px;
-        }
-
-        .progress-label {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
-            font-size: 14px;
-            color: var(--text-muted);
-        }
-
-        .progress-bar {
-            height: 10px;
-            background: var(--border);
-            border-radius: 5px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
+        .lock-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
             height: 100%;
-            background: var(--primary);
-            border-radius: 5px;
-            transition: width 0.5s ease;
+            background: var(--bg-color);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
         }
 
-        /* Toast notification */
+        .lock-screen.active { display: flex; }
+
+        .lock-box {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .lock-box .lock-icon { font-size: 60px; margin-bottom: 20px; }
+        .lock-box h2 { color: var(--text); margin-bottom: 10px; }
+        .lock-box p { color: var(--text-muted); margin-bottom: 25px; }
+
+        .lock-box input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--bg-color);
+            color: var(--text);
+            font-size: 16px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .lock-box button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .lock-box .unlock-btn { background: var(--primary); color: white; }
+        .lock-box .skip-btn { background: var(--hover-bg); color: var(--text-muted); border: 1px solid var(--border); }
+        .lock-box .error-msg { color: var(--danger); font-size: 14px; margin-top: 10px; }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(13, 17, 23, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .loading-overlay.active { display: flex; }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .loading-text { color: var(--text); font-size: 16px; }
+
         .toast {
             position: fixed;
             bottom: 30px;
@@ -743,71 +632,75 @@
             background: var(--success);
             color: white;
             border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
             transform: translateX(150%);
-            transition: transform 0.3s ease;
+            transition: transform 0.3s;
             z-index: 1001;
         }
 
-        .toast.show {
-            transform: translateX(0);
-        }
+        .toast.show { transform: translateX(0); }
 
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg-color);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--text-muted);
+        @media (max-width: 768px) {
+            .timer-display { font-size: 40px; }
+            .header { flex-direction: column; text-align: center; }
+            .nav-tab { padding: 10px 16px; font-size: 13px; }
         }
     </style>
 </head>
 <body>
+    <div class="lock-screen" id="lockScreen">
+        <div class="lock-box">
+            <div class="lock-icon">🔐</div>
+            <h2>Área Protegida</h2>
+            <p>Digite sua senha mestre para sincronizar</p>
+            <input type="password" id="unlockPassword" placeholder="Senha mestre" onkeypress="if(event.key==='Enter')unlockApp()">
+            <button class="unlock-btn" onclick="unlockApp()">🔓 Desbloquear</button>
+            <button class="skip-btn" onclick="skipUnlock()">Continuar offline</button>
+            <div class="error-msg" id="unlockError" style="display: none;"></div>
+        </div>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <div class="loading-text" id="loadingText">Carregando...</div>
+    </div>
+
     <div class="container">
-        <!-- Header -->
         <div class="header">
-            <h1>⚽ Fut7 Training System</h1>
-            <p>Gerencie seus treinos e acompanhe sua evolução</p>
+            <div class="header-left">
+                <h1>⚽ Fut7 Training System</h1>
+                <p>Gerencie seus treinos e evolução</p>
+            </div>
+            <div class="sync-status">
+                <div class="sync-indicator" id="syncIndicator"></div>
+                <span id="syncStatusText">Desconectado</span>
+                <button class="sync-btn" id="syncBtn" onclick="handleSyncClick()">🔄 Sincronizar</button>
+            </div>
         </div>
 
-        <!-- Navigation -->
         <div class="nav-tabs">
-            <button class="nav-tab active" onclick="showSection('treino')">🏃 Treino</button>
-            <button class="nav-tab" onclick="showSection('dashboard')">📊 Dashboard</button>
-            <button class="nav-tab" onclick="showSection('historico')">📋 Histórico</button>
-            <button class="nav-tab" onclick="showSection('exercicios')">✏️ Editar Exercícios</button>
-            <button class="nav-tab" onclick="showSection('dicas')">💡 Dicas</button>
+            <button class="nav-tab active" onclick="showSection('treino', this)">🏃 Treino</button>
+            <button class="nav-tab" onclick="showSection('dashboard', this)">📊 Dashboard</button>
+            <button class="nav-tab" onclick="showSection('historico', this)">📋 Histórico</button>
+            <button class="nav-tab" onclick="showSection('exercicios', this)">✏️ Exercícios</button>
+            <button class="nav-tab" onclick="showSection('dicas', this)">💡 Dicas</button>
+            <button class="nav-tab" onclick="showSection('config', this)">🔒 Segurança</button>
         </div>
 
-        <!-- Seção Treino -->
+        <!-- TREINO -->
         <div id="treino" class="section active">
-            <!-- Training Type Selection -->
             <div class="card">
-                <h2 class="card-title"><span>🎯</span> Selecione o Tipo de Treino</h2>
-                <div class="training-types" id="trainingTypes">
-                    <!-- Populated by JS -->
-                </div>
+                <h2 class="card-title"><span>🎯</span> Tipo de Treino</h2>
+                <div class="training-types" id="trainingTypes"></div>
             </div>
 
-            <!-- Timer -->
             <div class="card">
                 <h2 class="card-title"><span>⏱️</span> Cronômetros</h2>
                 <div class="timer-container">
-                    <div class="timer-box activity">
+                    <div class="timer-box">
                         <h3>⚡ Atividade</h3>
                         <div class="timer-display" id="activityTimer">00:00:00</div>
                         <div class="timer-buttons">
-                            <button class="timer-btn start" onclick="toggleTimer('activity')">▶️ Iniciar</button>
+                            <button class="timer-btn start" id="activityBtn" onclick="toggleTimer('activity')">▶️ Iniciar</button>
                             <button class="timer-btn reset" onclick="resetTimer('activity')">🔄 Zerar</button>
                         </div>
                     </div>
@@ -815,31 +708,22 @@
                         <h3>😴 Descanso</h3>
                         <div class="timer-display" id="restTimer">00:00:00</div>
                         <div class="timer-buttons">
-                            <button class="timer-btn start" onclick="toggleTimer('rest')">▶️ Iniciar</button>
+                            <button class="timer-btn start" id="restBtn" onclick="toggleTimer('rest')">▶️ Iniciar</button>
                             <button class="timer-btn reset" onclick="resetTimer('rest')">🔄 Zerar</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Exercise List -->
-            <div class="card" id="exerciseListCard">
-                <h2 class="card-title"><span>📝</span> Atividade</h2>
-                <div class="exercise-list" id="exerciseList">
-                    <p style="color: var(--text-muted); text-align: center;">Selecione um tipo de treino acima</p>
-                </div>
+            <div class="card">
+                <h2 class="card-title"><span>📝</span> Exercícios</h2>
+                <div id="exerciseList"><p style="color: var(--text-muted); text-align: center;">Selecione um treino</p></div>
                 <div class="progress-container" id="progressContainer" style="display: none;">
-                    <div class="progress-label">
-                        <span>Progresso</span>
-                        <span id="progressPercent">0%</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
-                    </div>
+                    <div class="progress-label"><span>Progresso</span><span id="progressPercent">0%</span></div>
+                    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
                 </div>
             </div>
 
-            <!-- Game Stats (only for JOGO) -->
             <div class="card" id="gameStatsCard" style="display: none;">
                 <h2 class="card-title"><span>🥅</span> Estatísticas do Jogo</h2>
                 <div class="game-stats">
@@ -862,456 +746,636 @@
                 </div>
             </div>
 
-            <!-- Rating -->
             <div class="card">
-                <h2 class="card-title"><span>⭐</span> Avaliação do Treino</h2>
-                <div class="rating-container">
-                    <div class="rating-options">
-                        <div class="rating-option" data-value="pessimo" onclick="selectRating(this)">😫 Péssimo</div>
-                        <div class="rating-option" data-value="ruim" onclick="selectRating(this)">😕 Ruim</div>
-                        <div class="rating-option" data-value="medio" onclick="selectRating(this)">😐 Médio</div>
-                        <div class="rating-option" data-value="bom" onclick="selectRating(this)">🙂 Bom</div>
-                        <div class="rating-option" data-value="otimo" onclick="selectRating(this)">🤩 Ótimo</div>
-                    </div>
+                <h2 class="card-title"><span>⭐</span> Avaliação</h2>
+                <div class="rating-options">
+                    <div class="rating-option" data-value="pessimo" onclick="selectRating(this)">😫 Péssimo</div>
+                    <div class="rating-option" data-value="ruim" onclick="selectRating(this)">😕 Ruim</div>
+                    <div class="rating-option" data-value="medio" onclick="selectRating(this)">😐 Médio</div>
+                    <div class="rating-option" data-value="bom" onclick="selectRating(this)">🙂 Bom</div>
+                    <div class="rating-option" data-value="otimo" onclick="selectRating(this)">🤩 Ótimo</div>
                 </div>
             </div>
 
-            <!-- Observation -->
             <div class="card">
                 <h2 class="card-title"><span>📝</span> Observações</h2>
-                <textarea class="observation-box" id="observation" placeholder="Anote como foi seu treino, o que sentiu, pontos a melhorar..."></textarea>
+                <textarea class="observation-box" id="observation" placeholder="Anote como foi seu treino..."></textarea>
             </div>
 
-            <!-- Save Button -->
-            <button class="save-btn" onclick="saveTraining()">💾 Salvar Treino</button>
+            <button class="save-btn" id="saveBtn" onclick="saveTraining()">💾 Salvar Treino</button>
         </div>
 
-        <!-- Seção Dashboard -->
+        <!-- DASHBOARD -->
         <div id="dashboard" class="section">
             <div class="dashboard-grid">
-                <div class="dashboard-stat total-trainings">
-                    <div class="stat-label">Total de Treinos</div>
-                    <div class="stat-number" id="totalTrainings">0</div>
-                </div>
-                <div class="dashboard-stat total-games">
-                    <div class="stat-label">Jogos Realizados</div>
-                    <div class="stat-number" id="totalGames">0</div>
-                </div>
-                <div class="dashboard-stat total-goals">
-                    <div class="stat-label">Total de Gols</div>
-                    <div class="stat-number" id="totalGoals">0</div>
-                </div>
-                <div class="dashboard-stat total-assists">
-                    <div class="stat-label">Total de Assistências</div>
-                    <div class="stat-number" id="totalAssists">0</div>
-                </div>
+                <div class="dashboard-stat total-trainings"><div class="stat-label">Total Treinos</div><div class="stat-number" id="totalTrainings">0</div></div>
+                <div class="dashboard-stat total-games"><div class="stat-label">Jogos</div><div class="stat-number" id="totalGames">0</div></div>
+                <div class="dashboard-stat total-goals"><div class="stat-label">Gols</div><div class="stat-number" id="totalGoals">0</div></div>
+                <div class="dashboard-stat total-assists"><div class="stat-label">Assistências</div><div class="stat-number" id="totalAssists">0</div></div>
             </div>
-
-            <div class="chart-container">
-                <h3 style="margin-bottom: 20px;">📈 Evolução das Avaliações</h3>
-                <canvas id="evolutionChart"></canvas>
-            </div>
-
-            <div class="chart-container">
-                <h3 style="margin-bottom: 20px;">📊 Treinos por Tipo</h3>
-                <canvas id="typeChart"></canvas>
-            </div>
-
-            <div class="chart-container">
-                <h3 style="margin-bottom: 20px;">⚽ Gols e Assistências por Jogo</h3>
-                <canvas id="gameStatsChart"></canvas>
-            </div>
+            <div class="chart-container"><h3>📈 Evolução</h3><canvas id="evolutionChart"></canvas></div>
+            <div class="chart-container"><h3>📊 Por Tipo</h3><canvas id="typeChart"></canvas></div>
+            <div class="chart-container"><h3>⚽ Gols/Assistências</h3><canvas id="gameStatsChart"></canvas></div>
         </div>
 
-        <!-- Seção Histórico -->
+        <!-- HISTÓRICO -->
         <div id="historico" class="section">
             <div class="card">
-                <h2 class="card-title"><span>📋</span> Histórico de Treinos</h2>
-                <div id="historyList">
-                    <p style="color: var(--text-muted); text-align: center;">Nenhum treino registrado ainda</p>
-                </div>
+                <h2 class="card-title"><span>📋</span> Histórico</h2>
+                <div id="historyList"><p style="color: var(--text-muted); text-align: center;">Nenhum treino</p></div>
             </div>
         </div>
 
-        <!-- Seção Editar Exercícios -->
+        <!-- EXERCÍCIOS -->
         <div id="exercicios" class="section">
             <div class="card">
                 <h2 class="card-title"><span>✏️</span> Gerenciar Exercícios</h2>
-                
                 <div class="form-group">
-                    <label>Selecione o Tipo de Treino:</label>
-                    <select id="editTrainingType" onchange="loadExercisesForEdit()">
-                        <option value="">Selecione...</option>
-                    </select>
+                    <label>Tipo de Treino:</label>
+                    <select id="editTrainingType" onchange="loadExercisesForEdit()"><option value="">Selecione...</option></select>
                 </div>
-
                 <div id="editExerciseList"></div>
-
-                <button class="btn-add" onclick="openAddExerciseModal()" style="margin-top: 15px;">➕ Adicionar Exercício</button>
+                <button class="btn-add" onclick="openAddExerciseModal()" style="margin-top: 15px;">➕ Adicionar</button>
             </div>
         </div>
 
-        <!-- Seção Dicas -->
+        <!-- DICAS -->
         <div id="dicas" class="section">
             <div class="card">
-                <h2 class="card-title"><span>💡</span> Dicas Personalizadas</h2>
-                <div class="tips-container" id="tipsContainer">
-                    <!-- Populated by JS based on user progress -->
+                <h2 class="card-title"><span>💡</span> Dicas</h2>
+                <div id="tipsContainer"></div>
+            </div>
+        </div>
+
+        <!-- SEGURANÇA -->
+        <div id="config" class="section">
+            <div class="card">
+                <h2 class="card-title"><span>🔒</span> Segurança</h2>
+
+                <div class="config-section">
+                    <h3>📊 Status</h3>
+                    <div id="securityStatus"></div>
+                </div>
+
+                <div class="config-section">
+                    <h3>🔑 Senha Mestre</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 15px;">Protege seu token com criptografia AES-256.</p>
+                    <div class="form-group">
+                        <label>Nova Senha:</label>
+                        <input type="password" id="newMasterPassword" class="config-input" placeholder="Mínimo 6 caracteres" oninput="checkPasswordStrength()">
+                        <div class="password-strength">
+                            <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+                            <span class="strength-text" id="strengthText"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Confirmar:</label>
+                        <input type="password" id="confirmMasterPassword" class="config-input" placeholder="Repita a senha">
+                    </div>
+                    <div class="config-group">
+                        <button class="config-btn success" onclick="setMasterPassword()">🔐 Definir Senha</button>
+                        <button class="config-btn danger" onclick="removeMasterPassword()" id="removePasswordBtn" style="display: none;">🗑️ Remover</button>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3>🐙 Token GitHub</h3>
+                    <div class="form-group">
+                        <label>Token:</label>
+                        <input type="password" id="githubToken" class="config-input" placeholder="ghp_xxxx">
+                    </div>
+                    <div class="config-group">
+                        <button class="config-btn success" onclick="saveGitHubToken()">💾 Salvar Token</button>
+                        <button class="config-btn danger" onclick="removeGitHubToken()">🗑️ Remover</button>
+                    </div>
+                    <div class="config-info">
+                        <p><strong>Como obter:</strong></p>
+                        <p>1. <a href="https://github.com/settings/tokens/new" target="_blank">github.com/settings/tokens/new</a></p>
+                        <p>2. Escopo: <code>repo</code></p>
+                        <p><strong>Repositório:</strong> <code>azdevcoder/treino_fut7</code></p>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3>🔄 Sincronização</h3>
+                    <div class="config-group">
+                        <button class="config-btn" onclick="syncWithGitHub()">🔄 Sincronizar</button>
+                        <button class="config-btn" onclick="forceUpload()">⬆️ Upload</button>
+                        <button class="config-btn" onclick="forceDownload()">⬇️ Download</button>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3>🗄️ Backup</h3>
+                    <div class="config-group">
+                        <button class="config-btn" onclick="exportLocalData()">📤 Exportar</button>
+                        <button class="config-btn" onclick="document.getElementById('importFile').click()">📥 Importar</button>
+                        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importLocalData(event)">
+                        <button class="config-btn danger" onclick="clearAllData()">⚠️ Limpar</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal Adicionar Exercício -->
+    <!-- MODAL -->
     <div class="modal" id="addExerciseModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Adicionar Novo Exercício</h3>
+                <h3>Adicionar Exercício</h3>
                 <button class="modal-close" onclick="closeModal()">&times;</button>
             </div>
             <div class="form-group">
-                <label>Tipo de Treino:</label>
-                <select id="newExerciseType">
-                    <!-- Populated by JS -->
-                </select>
+                <label>Tipo:</label>
+                <select id="newExerciseType"></select>
             </div>
             <div class="form-group">
-                <label>Nome do Exercício:</label>
+                <label>Nome:</label>
                 <input type="text" id="newExerciseName" placeholder="Ex: Agachamento">
             </div>
             <div class="form-group">
                 <label>Detalhes:</label>
-                <input type="text" id="newExerciseDetails" placeholder="Ex: 3x15 repetições">
+                <input type="text" id="newExerciseDetails" placeholder="Ex: 3x15">
             </div>
             <button class="save-btn" onclick="addNewExercise()">Adicionar</button>
         </div>
     </div>
 
-    <!-- Toast Notification -->
-    <div class="toast" id="toast">Treino salvo com sucesso!</div>
+    <div class="toast" id="toast"></div>
 
     <script>
-        // ==================== DATA ====================
-        const defaultTrainingTypes = [
-            { id: 'jogo', name: 'Segunda-Feira - JOGO', icon: '⚽', desc: 'Partida de Fut7' },
-            { id: 'recuperacao', name: 'Terça-Feira - Recuperação Ativa', icon: '🔄', desc: 'Eliminar fadiga' },
-            { id: 'hiit_agilidade', name: 'Quarta-Feira - HIIT + Agilidade', icon: '⚡', desc: 'Explosão e mudança de direção' },
-            { id: 'resistencia', name: 'Quinta-Feira - Resistência', icon: '🏃', desc: 'Base aeróbica' },
-            { id: 'forca_sprints', name: 'Sexta-Feira - Força + Sprints', icon: '💪', desc: 'Potência muscular' },
-            { id: 'hiit_intenso', name: 'Sábado - HIIT Intenso', icon: '🔥', desc: 'Simular intensidade do jogo' },
-            { id: 'descanso', name: 'Domingo - Descanso Total', icon: '😴', desc: 'Recuperação completa' }
+        const GITHUB_REPO = 'azdevcoder/treino_fut7';
+        const GITHUB_FILE = 'data.json';
+        const GITHUB_API = 'https://api.github.com';
+
+        // Crypto
+        async function deriveKey(password, salt) {
+            const enc = new TextEncoder();
+            const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
+            return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' }, keyMaterial, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+        }
+
+        async function encryptData(data, password) {
+            const salt = crypto.getRandomValues(new Uint8Array(16));
+            const iv = crypto.getRandomValues(new Uint8Array(12));
+            const key = await deriveKey(password, salt);
+            const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, new TextEncoder().encode(data));
+            const combined = new Uint8Array(salt.length + iv.length + encrypted.byteLength);
+            combined.set(salt, 0);
+            combined.set(iv, salt.length);
+            combined.set(new Uint8Array(encrypted), salt.length + iv.length);
+            return btoa(String.fromCharCode(...combined));
+        }
+
+        async function decryptData(encryptedData, password) {
+            const combined = Uint8Array.from(atob(encryptedData), c => c.charCodeAt(0));
+            const salt = combined.slice(0, 16);
+            const iv = combined.slice(16, 28);
+            const data = combined.slice(28);
+            const key = await deriveKey(password, salt);
+            const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
+            return new TextDecoder().decode(decrypted);
+        }
+
+        // Default Data
+        const defaultTypes = [
+            { id: 'jogo', name: 'JOGO', icon: '⚽', desc: 'Partida' },
+            { id: 'recuperacao', name: 'Recuperação', icon: '🔄', desc: 'Ativa' },
+            { id: 'hiit_agilidade', name: 'HIIT + Agilidade', icon: '⚡', desc: 'Explosão' },
+            { id: 'resistencia', name: 'Resistência', icon: '🏃', desc: 'Aeróbica' },
+            { id: 'forca_sprints', name: 'Força + Sprints', icon: '💪', desc: 'Potência' },
+            { id: 'hiit_intenso', name: 'HIIT Intenso', icon: '🔥', desc: 'Alta intensidade' },
+            { id: 'descanso', name: 'Descanso', icon: '😴', desc: 'Recuperação' }
         ];
 
         const defaultExercises = {
-            jogo: [
-                { name: 'Aquecimento', details: '10 min' },
-                { name: 'Partida', details: '2x25 min' },
-                { name: 'Alongamento', details: '10 min' }
-            ],
-            recuperacao: [
-                { name: 'Caminhada leve', details: '10 min' },
-                { name: 'Trote bem leve', details: '10 min' },
-                { name: 'Alongamento dinâmico', details: '15 min' },
-                { name: 'Alongamento estático', details: '15 min' },
-                { name: 'Respiração/relaxamento', details: '10 min' }
-            ],
-            hiit_agilidade: [
-                { name: 'Aquecimento', details: '8 min trote + mobilidade' },
-                { name: 'Shuttle Run', details: '5m-10m-15m (6x) - descanso 40s' },
-                { name: 'Sprints 20m', details: '8x com 30s descanso' },
-                { name: 'Zigue-zague cones', details: '6x (15s cada)' },
-                { name: 'Escada agilidade', details: '5 min variando padrões' },
-                { name: 'Desaquecimento', details: '5 min caminhada + alongamento' }
-            ],
-            resistencia: [
-                { name: 'Aquecimento', details: '5 min caminhada rápida' },
-                { name: 'Corrida contínua', details: '25-30 min (ritmo moderado)' },
-                { name: 'Fartlek leve', details: '4x acelerar 30s durante corrida' },
-                { name: 'Desaquecimento', details: '5 min caminhada' },
-                { name: 'Alongamento', details: '10 min' }
-            ],
-            forca_sprints: [
-                { name: 'Aquecimento', details: '5 min' },
-                { name: 'Agachamento', details: '3x15' },
-                { name: 'Afundo alternado', details: '3x12 (cada perna)' },
-                { name: 'Elevação panturrilha', details: '3x20' },
-                { name: 'Prancha frontal', details: '3x30-45s' },
-                { name: 'Prancha lateral', details: '2x20s (cada lado)' },
-                { name: 'Sprints curtos 10m', details: '6x' },
-                { name: 'Alongamento', details: '8 min' }
-            ],
-            hiit_intenso: [
-                { name: 'Aquecimento', details: '10 min trote + mobilidade' },
-                { name: 'Circuito 1: Burpees', details: '10x (3 rodadas)' },
-                { name: 'Circuito 1: Sprints 30m', details: '3 rodadas' },
-                { name: 'Circuito 1: Polichinelos', details: '20x (3 rodadas)' },
-                { name: 'Circuito 2: Mountain climber', details: '20x (3 rodadas)' },
-                { name: 'Circuito 2: Sprint 20m', details: '3 rodadas' },
-                { name: 'Circuito 2: Agachamento jump', details: '10x (3 rodadas)' },
-                { name: 'Tiros intervalados', details: '6x (30s forte / 30s caminhada)' },
-                { name: 'Desaquecimento', details: '10 min alongamento completo' }
-            ],
-            descanso: [
-                { name: 'Descanso completo', details: 'ou caminhada leve 20 min' },
-                { name: 'Hidratação', details: 'Beber bastante água' },
-                { name: 'Alimentação', details: 'Boa nutrição' },
-                { name: 'Sono', details: 'Mínimo 7-8 horas' }
-            ]
+            jogo: [{ name: 'Aquecimento', details: '10 min' }, { name: 'Partida', details: '2x25 min' }, { name: 'Alongamento', details: '10 min' }],
+            recuperacao: [{ name: 'Caminhada', details: '10 min' }, { name: 'Trote leve', details: '10 min' }, { name: 'Alongamento', details: '20 min' }],
+            hiit_agilidade: [{ name: 'Aquecimento', details: '8 min' }, { name: 'Shuttle Run', details: '6x' }, { name: 'Sprints 20m', details: '8x' }, { name: 'Zigue-zague', details: '6x' }],
+            resistencia: [{ name: 'Aquecimento', details: '5 min' }, { name: 'Corrida', details: '25-30 min' }, { name: 'Alongamento', details: '10 min' }],
+            forca_sprints: [{ name: 'Aquecimento', details: '5 min' }, { name: 'Agachamento', details: '3x15' }, { name: 'Afundo', details: '3x12' }, { name: 'Prancha', details: '3x45s' }, { name: 'Sprints', details: '6x' }],
+            hiit_intenso: [{ name: 'Aquecimento', details: '10 min' }, { name: 'Burpees', details: '3x10' }, { name: 'Sprints', details: '6x30s' }, { name: 'Mountain climber', details: '3x20' }],
+            descanso: [{ name: 'Descanso', details: 'Completo' }, { name: 'Hidratação', details: '2-3L' }, { name: 'Sono', details: '7-8h' }]
         };
 
-        // ==================== STATE ====================
-        let state = {
-            selectedTrainingType: null,
-            goals: 0,
-            assists: 0,
-            rating: null,
-            completedExercises: [],
-            activityTime: 0,
-            restTime: 0,
-            activityRunning: false,
-            restRunning: false,
-            activityInterval: null,
-            restInterval: null
-        };
+        // State
+        let state = { selectedTrainingType: null, goals: 0, assists: 0, rating: null, completedExercises: [], activityTime: 0, restTime: 0, activityRunning: false, restRunning: false, activityInterval: null, restInterval: null };
+        let fileSha = null;
+        let decryptedToken = null;
+        let isUnlocked = false;
+        let charts = { evolution: null, type: null, gameStats: null };
 
-        // ==================== LOCAL STORAGE ====================
-        function loadData(key, defaultValue) {
-            const data = localStorage.getItem(key);
-            return data ? JSON.parse(data) : defaultValue;
+        // Storage
+        const loadLocal = (key, def) => { try { const d = localStorage.getItem(key); return d ? JSON.parse(d) : def; } catch { return def; } };
+        const saveLocal = (key, data) => { try { localStorage.setItem(key, JSON.stringify(data)); } catch(e) { console.error(e); } };
+        const getTypes = () => loadLocal('trainingTypes', defaultTypes);
+        const getExercises = () => loadLocal('exercises', defaultExercises);
+        const getHistory = () => loadLocal('trainingHistory', []);
+        const hasToken = () => !!localStorage.getItem('encryptedToken');
+        const hasPassword = () => !!localStorage.getItem('passwordHash');
+
+        // Password
+        async function hashPassword(p) {
+            const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(p + 'fut7_2024'));
+            return btoa(String.fromCharCode(...new Uint8Array(hash)));
         }
 
-        function saveData(key, data) {
-            localStorage.setItem(key, JSON.stringify(data));
+        async function setMasterPassword() {
+            const p = document.getElementById('newMasterPassword').value;
+            const c = document.getElementById('confirmMasterPassword').value;
+            if (p.length < 6) return showToast('Mínimo 6 caracteres', 'error');
+            if (p !== c) return showToast('Senhas não coincidem', 'error');
+            localStorage.setItem('passwordHash', await hashPassword(p));
+            if (decryptedToken) localStorage.setItem('encryptedToken', await encryptData(decryptedToken, p));
+            document.getElementById('newMasterPassword').value = '';
+            document.getElementById('confirmMasterPassword').value = '';
+            isUnlocked = true;
+            updateSecurityStatus();
+            showToast('Senha definida!');
         }
 
-        function getTrainingTypes() {
-            return loadData('trainingTypes', defaultTrainingTypes);
+        async function removeMasterPassword() {
+            if (!confirm('Remover proteção?')) return;
+            localStorage.removeItem('passwordHash');
+            localStorage.removeItem('encryptedToken');
+            decryptedToken = null;
+            isUnlocked = false;
+            updateSecurityStatus();
+            updateSyncStatus('', 'Desconectado');
+            showToast('Proteção removida');
         }
 
-        function getExercises() {
-            return loadData('exercises', defaultExercises);
+        function checkPasswordStrength() {
+            const p = document.getElementById('newMasterPassword').value;
+            let s = 0;
+            if (p.length >= 6) s += 25;
+            if (p.length >= 10) s += 25;
+            if (/[A-Z]/.test(p)) s += 25;
+            if (/[0-9]/.test(p)) s += 25;
+            const fill = document.getElementById('strengthFill');
+            const text = document.getElementById('strengthText');
+            const colors = { 0: ['Fraca', '#f85149'], 50: ['Média', '#d29922'], 75: ['Boa', '#58a6ff'], 100: ['Forte', '#238636'] };
+            const level = s >= 100 ? 100 : s >= 75 ? 75 : s >= 50 ? 50 : 0;
+            fill.style.width = s + '%';
+            fill.style.background = colors[level][1];
+            text.textContent = colors[level][0];
+            text.style.color = colors[level][1];
         }
 
-        function getTrainingHistory() {
-            return loadData('trainingHistory', []);
+        // Token
+        async function saveGitHubToken() {
+            const token = document.getElementById('githubToken').value.trim();
+            if (!token) return showToast('Digite o token', 'error');
+            if (!hasPassword()) return showToast('Defina senha primeiro', 'error');
+            if (!isUnlocked) { showLockScreen(); return showToast('Desbloqueie primeiro', 'error'); }
+            const p = prompt('Senha mestre:');
+            if (!p || await hashPassword(p) !== localStorage.getItem('passwordHash')) return showToast('Senha incorreta', 'error');
+            localStorage.setItem('encryptedToken', await encryptData(token, p));
+            decryptedToken = token;
+            document.getElementById('githubToken').value = '';
+            updateSecurityStatus();
+            showToast('Token salvo!');
+            syncWithGitHub();
         }
 
-        // ==================== INITIALIZATION ====================
+        function removeGitHubToken() {
+            if (!confirm('Remover token?')) return;
+            localStorage.removeItem('encryptedToken');
+            decryptedToken = null;
+            updateSecurityStatus();
+            updateSyncStatus('', 'Desconectado');
+            showToast('Token removido');
+        }
+
+        // Lock
+        function showLockScreen() {
+            if (hasPassword() && hasToken()) {
+                document.getElementById('lockScreen').classList.add('active');
+                setTimeout(() => document.getElementById('unlockPassword').focus(), 100);
+            }
+        }
+
+        async function unlockApp() {
+            const p = document.getElementById('unlockPassword').value;
+            const err = document.getElementById('unlockError');
+            if (!p) { err.textContent = 'Digite a senha'; err.style.display = 'block'; return; }
+            if (await hashPassword(p) !== localStorage.getItem('passwordHash')) {
+                err.textContent = 'Senha incorreta';
+                err.style.display = 'block';
+                document.getElementById('unlockPassword').value = '';
+                return;
+            }
+            try {
+                const enc = localStorage.getItem('encryptedToken');
+                if (enc) decryptedToken = await decryptData(enc, p);
+                isUnlocked = true;
+                document.getElementById('lockScreen').classList.remove('active');
+                document.getElementById('unlockPassword').value = '';
+                err.style.display = 'none';
+                updateSecurityStatus();
+                updateSyncStatus('connected', 'Conectado');
+                showToast('Desbloqueado!');
+                syncWithGitHub();
+            } catch { err.textContent = 'Erro ao descriptografar'; err.style.display = 'block'; }
+        }
+
+        function skipUnlock() {
+            document.getElementById('lockScreen').classList.remove('active');
+            updateSyncStatus('locked', 'Bloqueado');
+            showToast('Modo offline', 'warning');
+        }
+
+        function handleSyncClick() {
+            if (hasToken() && !isUnlocked) showLockScreen();
+            else if (!hasToken()) { showSection('config'); showToast('Configure o token', 'warning'); }
+            else syncWithGitHub();
+        }
+
+        function updateSecurityStatus() {
+            const c = document.getElementById('securityStatus');
+            if (!c) return;
+            let h = '<div>';
+            h += hasPassword() ? '<span class="security-badge secure">🔐 Senha Ativa</span>' : '<span class="security-badge warning">⚠️ Sem Senha</span>';
+            h += hasToken() ? '<span class="security-badge secure">🔒 Token Criptografado</span>' : '<span class="security-badge warning">⚠️ Sem Token</span>';
+            if (isUnlocked && hasToken()) h += '<span class="security-badge secure">🔓 Desbloqueado</span>';
+            h += '</div>';
+            if (hasPassword() && hasToken()) h += '<div class="config-info success"><p>✅ Token protegido com AES-256</p></div>';
+            else if (!hasPassword()) h += '<div class="config-info warning"><p>⚠️ Configure uma senha mestre</p></div>';
+            c.innerHTML = h;
+            const btn = document.getElementById('removePasswordBtn');
+            if (btn) btn.style.display = hasPassword() ? 'inline-block' : 'none';
+        }
+
+        // GitHub API
+        async function githubRequest(method, endpoint, body = null) {
+            if (!decryptedToken) throw new Error('Token indisponível');
+            const opt = { method, headers: { 'Authorization': `Bearer ${decryptedToken}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' } };
+            if (body) opt.body = JSON.stringify(body);
+            const res = await fetch(`${GITHUB_API}${endpoint}`, opt);
+            if (!res.ok) throw new Error((await res.json().catch(() => ({}))).message || `HTTP ${res.status}`);
+            return res.json();
+        }
+
+        async function getFileFromGitHub() {
+            try {
+                const d = await githubRequest('GET', `/repos/${GITHUB_REPO}/contents/${GITHUB_FILE}`);
+                fileSha = d.sha;
+                return JSON.parse(atob(d.content));
+            } catch (e) { if (e.message.includes('404')) return null; throw e; }
+        }
+
+        async function saveFileToGitHub(data) {
+            const body = { message: `Update ${new Date().toLocaleString('pt-BR')}`, content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))), branch: 'main' };
+            if (fileSha) body.sha = fileSha;
+            const res = await githubRequest('PUT', `/repos/${GITHUB_REPO}/contents/${GITHUB_FILE}`, body);
+            fileSha = res.content.sha;
+        }
+
+        // Sync
+        function updateSyncStatus(status, text) {
+            const ind = document.getElementById('syncIndicator');
+            const txt = document.getElementById('syncStatusText');
+            const btn = document.getElementById('syncBtn');
+            if (ind) ind.className = 'sync-indicator ' + status;
+            if (txt) txt.textContent = text;
+            if (btn) { btn.className = status === 'locked' ? 'sync-btn unlock' : 'sync-btn'; btn.innerHTML = status === 'locked' ? '🔓 Desbloquear' : '🔄 Sincronizar'; }
+        }
+
+        function showLoading(show, text = 'Carregando...') {
+            const o = document.getElementById('loadingOverlay');
+            const t = document.getElementById('loadingText');
+            if (t) t.textContent = text;
+            if (o) o.classList.toggle('active', show);
+        }
+
+        async function syncWithGitHub() {
+            if (!decryptedToken) { if (hasToken()) showLockScreen(); else showToast('Configure token', 'error'); return; }
+            showLoading(true, 'Sincronizando...');
+            updateSyncStatus('syncing', 'Sincronizando...');
+            try {
+                const remote = await getFileFromGitHub();
+                const local = getAllLocalData();
+                if (!remote) { await saveFileToGitHub(local); showToast('Dados enviados!'); }
+                else {
+                    const merged = mergeData(local, remote);
+                    saveAllLocalData(merged);
+                    await saveFileToGitHub(merged);
+                    renderTrainingTypes();
+                    updateDashboardNumbers();
+                    renderHistory();
+                    generateTips();
+                    showToast('Sincronizado!');
+                }
+                updateSyncStatus('connected', 'Conectado');
+            } catch (e) { console.error(e); showToast('Erro: ' + e.message, 'error'); updateSyncStatus('error', 'Erro'); }
+            finally { showLoading(false); }
+        }
+
+        async function forceUpload() {
+            if (!decryptedToken) return showLockScreen();
+            if (!confirm('Sobrescrever GitHub?')) return;
+            showLoading(true, 'Enviando...');
+            try { await saveFileToGitHub(getAllLocalData()); showToast('Upload OK!'); updateSyncStatus('connected', 'Conectado'); }
+            catch (e) { showToast('Erro: ' + e.message, 'error'); }
+            finally { showLoading(false); }
+        }
+
+        async function forceDownload() {
+            if (!decryptedToken) return showLockScreen();
+            if (!confirm('Sobrescrever local?')) return;
+            showLoading(true, 'Baixando...');
+            try {
+                const d = await getFileFromGitHub();
+                if (d) { saveAllLocalData(d); renderTrainingTypes(); updateDashboardNumbers(); renderHistory(); generateTips(); populateEditDropdowns(); showToast('Download OK!'); }
+                else showToast('Nenhum dado', 'error');
+            } catch (e) { showToast('Erro: ' + e.message, 'error'); }
+            finally { showLoading(false); }
+        }
+
+        const getAllLocalData = () => ({ trainingTypes: getTypes(), exercises: getExercises(), trainingHistory: getHistory(), lastUpdated: new Date().toISOString() });
+
+        function saveAllLocalData(d) {
+            if (d.trainingTypes) saveLocal('trainingTypes', d.trainingTypes);
+            if (d.exercises) saveLocal('exercises', d.exercises);
+            if (d.trainingHistory) saveLocal('trainingHistory', d.trainingHistory);
+        }
+
+        function mergeData(local, remote) {
+            const map = new Map();
+            [...(remote.trainingHistory || []), ...(local.trainingHistory || [])].forEach(i => map.set(i.id, i));
+            return {
+                trainingTypes: local.trainingTypes || remote.trainingTypes || defaultTypes,
+                exercises: new Date(local.lastUpdated || 0) > new Date(remote.lastUpdated || 0) ? local.exercises : remote.exercises,
+                trainingHistory: Array.from(map.values()).sort((a, b) => new Date(b.date) - new Date(a.date)),
+                lastUpdated: new Date().toISOString()
+            };
+        }
+
+        // Backup
+        function exportLocalData() {
+            const blob = new Blob([JSON.stringify(getAllLocalData(), null, 2)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `fut7_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            showToast('Exportado!');
+        }
+
+        function importLocalData(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = ev => {
+                try {
+                    saveAllLocalData(JSON.parse(ev.target.result));
+                    renderTrainingTypes(); updateDashboardNumbers(); renderHistory(); generateTips(); populateEditDropdowns();
+                    showToast('Importado!');
+                } catch { showToast('Arquivo inválido', 'error'); }
+            };
+            reader.readAsText(file);
+            e.target.value = '';
+        }
+
+        function clearAllData() {
+            if (!confirm('APAGAR TUDO?')) return;
+            if (!confirm('Confirmar?')) return;
+            localStorage.removeItem('trainingTypes');
+            localStorage.removeItem('exercises');
+            localStorage.removeItem('trainingHistory');
+            renderTrainingTypes(); updateDashboardNumbers(); renderHistory(); generateTips(); populateEditDropdowns();
+            showToast('Dados apagados');
+        }
+
+        // Init
         function init() {
             renderTrainingTypes();
             populateEditDropdowns();
-            updateDashboard();
+            updateDashboardNumbers();
             renderHistory();
             generateTips();
+            updateSecurityStatus();
+            if (hasPassword() && hasToken()) { updateSyncStatus('locked', 'Bloqueado'); showLockScreen(); }
+            else updateSyncStatus('', 'Não configurado');
         }
 
-        // ==================== TRAINING TYPES ====================
+        // Training Types
         function renderTrainingTypes() {
-            const container = document.getElementById('trainingTypes');
-            const types = getTrainingTypes();
-            
-            container.innerHTML = types.map(type => `
-                <div class="training-type-btn" data-id="${type.id}" onclick="selectTrainingType('${type.id}')">
-                    <div class="icon">${type.icon}</div>
-                    <div class="name">${type.name}</div>
-                    <div class="desc">${type.desc}</div>
-                </div>
-            `).join('');
+            const c = document.getElementById('trainingTypes');
+            if (!c) return;
+            c.innerHTML = getTypes().map(t => `<div class="training-type-btn" data-id="${t.id}" onclick="selectTrainingType('${t.id}')"><div class="icon">${t.icon}</div><div class="name">${t.name}</div><div class="desc">${t.desc}</div></div>`).join('');
         }
 
-        function selectTrainingType(typeId) {
-            state.selectedTrainingType = typeId;
+        function selectTrainingType(id) {
+            state.selectedTrainingType = id;
             state.completedExercises = [];
-            
-            // Update UI
-            document.querySelectorAll('.training-type-btn').forEach(btn => {
-                btn.classList.remove('selected');
-                if (btn.dataset.id === typeId) {
-                    btn.classList.add('selected');
-                }
-            });
-
-            // Show/hide game stats
-            const gameStatsCard = document.getElementById('gameStatsCard');
-            if (typeId === 'jogo') {
-                gameStatsCard.style.display = 'block';
-            } else {
-                gameStatsCard.style.display = 'none';
-            }
-
-            renderExercises(typeId);
+            document.querySelectorAll('.training-type-btn').forEach(b => b.classList.toggle('selected', b.dataset.id === id));
+            const gs = document.getElementById('gameStatsCard');
+            if (gs) gs.style.display = id === 'jogo' ? 'block' : 'none';
+            renderExercises(id);
         }
 
-        // ==================== EXERCISES ====================
-        function renderExercises(typeId) {
-            const container = document.getElementById('exerciseList');
-            const exercises = getExercises()[typeId] || [];
-            const progressContainer = document.getElementById('progressContainer');
-
-            if (exercises.length === 0) {
-                container.innerHTML = '<p style="color: var(--text-muted); text-align: center;">Nenhum exercício cadastrado para este tipo</p>';
-                progressContainer.style.display = 'none';
-                return;
-            }
-
-            progressContainer.style.display = 'block';
-
-            container.innerHTML = exercises.map((ex, index) => `
-                <div class="exercise-item" data-index="${index}">
-                    <input type="checkbox" onchange="toggleExercise(${index})">
-                    <div class="exercise-info">
-                        <div class="exercise-name">${ex.name}</div>
-                        <div class="exercise-details">${ex.details}</div>
-                    </div>
-                </div>
-            `).join('');
-
+        // Exercises
+        function renderExercises(id) {
+            const c = document.getElementById('exerciseList');
+            const p = document.getElementById('progressContainer');
+            if (!c) return;
+            const ex = getExercises()[id] || [];
+            if (!ex.length) { c.innerHTML = '<p style="color:var(--text-muted);text-align:center">Nenhum exercício</p>'; if (p) p.style.display = 'none'; return; }
+            if (p) p.style.display = 'block';
+            c.innerHTML = ex.map((e, i) => `<div class="exercise-item" data-index="${i}"><input type="checkbox" onchange="toggleExercise(${i})"><div class="exercise-info"><div class="exercise-name">${e.name}</div><div class="exercise-details">${e.details}</div></div></div>`).join('');
             updateProgress();
         }
 
-        function toggleExercise(index) {
-            const item = document.querySelector(`.exercise-item[data-index="${index}"]`);
-            const checkbox = item.querySelector('input[type="checkbox"]');
-            
-            if (checkbox.checked) {
-                item.classList.add('completed');
-                if (!state.completedExercises.includes(index)) {
-                    state.completedExercises.push(index);
-                }
-            } else {
-                item.classList.remove('completed');
-                state.completedExercises = state.completedExercises.filter(i => i !== index);
-            }
-            
+        function toggleExercise(i) {
+            const item = document.querySelector(`.exercise-item[data-index="${i}"]`);
+            if (!item) return;
+            const cb = item.querySelector('input[type="checkbox"]');
+            item.classList.toggle('completed', cb.checked);
+            if (cb.checked && !state.completedExercises.includes(i)) state.completedExercises.push(i);
+            else state.completedExercises = state.completedExercises.filter(x => x !== i);
             updateProgress();
         }
 
         function updateProgress() {
-            const exercises = getExercises()[state.selectedTrainingType] || [];
-            const total = exercises.length;
-            const completed = state.completedExercises.length;
-            const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
-
-            document.getElementById('progressPercent').textContent = `${percent}%`;
-            document.getElementById('progressFill').style.width = `${percent}%`;
+            const ex = getExercises()[state.selectedTrainingType] || [];
+            const pct = ex.length ? Math.round((state.completedExercises.length / ex.length) * 100) : 0;
+            const pe = document.getElementById('progressPercent');
+            const pf = document.getElementById('progressFill');
+            if (pe) pe.textContent = pct + '%';
+            if (pf) pf.style.width = pct + '%';
         }
 
-        // ==================== TIMER ====================
+        // Timer
         function toggleTimer(type) {
+            const btn = document.getElementById(type + 'Btn');
             if (type === 'activity') {
-                if (state.activityRunning) {
-                    clearInterval(state.activityInterval);
-                    state.activityRunning = false;
-                } else {
-                    state.activityInterval = setInterval(() => {
-                        state.activityTime++;
-                        updateTimerDisplay('activity');
-                    }, 1000);
-                    state.activityRunning = true;
-                }
+                if (state.activityRunning) { clearInterval(state.activityInterval); state.activityRunning = false; if (btn) btn.innerHTML = '▶️ Iniciar'; }
+                else { state.activityInterval = setInterval(() => { state.activityTime++; updateTimerDisplay('activity'); }, 1000); state.activityRunning = true; if (btn) btn.innerHTML = '⏸️ Pausar'; }
             } else {
-                if (state.restRunning) {
-                    clearInterval(state.restInterval);
-                    state.restRunning = false;
-                } else {
-                    state.restInterval = setInterval(() => {
-                        state.restTime++;
-                        updateTimerDisplay('rest');
-                    }, 1000);
-                    state.restRunning = true;
-                }
+                if (state.restRunning) { clearInterval(state.restInterval); state.restRunning = false; if (btn) btn.innerHTML = '▶️ Iniciar'; }
+                else { state.restInterval = setInterval(() => { state.restTime++; updateTimerDisplay('rest'); }, 1000); state.restRunning = true; if (btn) btn.innerHTML = '⏸️ Pausar'; }
             }
         }
 
         function resetTimer(type) {
-            if (type === 'activity') {
-                clearInterval(state.activityInterval);
-                state.activityTime = 0;
-                state.activityRunning = false;
-                updateTimerDisplay('activity');
-            } else {
-                clearInterval(state.restInterval);
-                state.restTime = 0;
-                state.restRunning = false;
-                updateTimerDisplay('rest');
-            }
+            const btn = document.getElementById(type + 'Btn');
+            if (type === 'activity') { clearInterval(state.activityInterval); state.activityTime = 0; state.activityRunning = false; }
+            else { clearInterval(state.restInterval); state.restTime = 0; state.restRunning = false; }
+            if (btn) btn.innerHTML = '▶️ Iniciar';
+            updateTimerDisplay(type);
         }
 
         function updateTimerDisplay(type) {
-            const time = type === 'activity' ? state.activityTime : state.restTime;
-            const hours = Math.floor(time / 3600);
-            const minutes = Math.floor((time % 3600) / 60);
-            const seconds = time % 60;
-            
-            const display = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            document.getElementById(`${type}Timer`).textContent = display;
+            const t = type === 'activity' ? state.activityTime : state.restTime;
+            const el = document.getElementById(type + 'Timer');
+            if (el) el.textContent = [Math.floor(t/3600), Math.floor((t%3600)/60), t%60].map(n => String(n).padStart(2,'0')).join(':');
         }
 
-        function formatTime(seconds) {
-            const h = Math.floor(seconds / 3600);
-            const m = Math.floor((seconds % 3600) / 60);
-            const s = seconds % 60;
-            return `${h}h ${m}m ${s}s`;
+        // Stats
+        function updateStat(type, d) {
+            if (type === 'goals') { state.goals = Math.max(0, state.goals + d); const e = document.getElementById('goalsValue'); if (e) e.textContent = state.goals; }
+            else { state.assists = Math.max(0, state.assists + d); const e = document.getElementById('assistsValue'); if (e) e.textContent = state.assists; }
         }
 
-        // ==================== GAME STATS ====================
-        function updateStat(type, delta) {
-            if (type === 'goals') {
-                state.goals = Math.max(0, state.goals + delta);
-                document.getElementById('goalsValue').textContent = state.goals;
-            } else {
-                state.assists = Math.max(0, state.assists + delta);
-                document.getElementById('assistsValue').textContent = state.assists;
-            }
+        function selectRating(el) {
+            document.querySelectorAll('.rating-option').forEach(o => o.classList.remove('selected'));
+            el.classList.add('selected');
+            state.rating = el.dataset.value;
         }
 
-        // ==================== RATING ====================
-        function selectRating(element) {
-            document.querySelectorAll('.rating-option').forEach(opt => opt.classList.remove('selected'));
-            element.classList.add('selected');
-            state.rating = element.dataset.value;
-        }
-
-        // ==================== SAVE TRAINING ====================
-        function saveTraining() {
-            if (!state.selectedTrainingType) {
-                showToast('Selecione um tipo de treino!', 'error');
-                return;
-            }
-
-            if (!state.rating) {
-                showToast('Selecione uma avaliação!', 'error');
-                return;
-            }
-
+        // Save Training
+        async function saveTraining() {
+            if (!state.selectedTrainingType) return showToast('Selecione treino', 'error');
+            if (!state.rating) return showToast('Selecione avaliação', 'error');
+            const btn = document.getElementById('saveBtn');
+            if (btn) { btn.disabled = true; btn.textContent = '⏳ Salvando...'; }
             const training = {
                 id: Date.now(),
                 date: new Date().toISOString(),
                 type: state.selectedTrainingType,
-                typeName: getTrainingTypes().find(t => t.id === state.selectedTrainingType)?.name,
+                typeName: getTypes().find(t => t.id === state.selectedTrainingType)?.name,
                 goals: state.goals,
                 assists: state.assists,
                 rating: state.rating,
-                observation: document.getElementById('observation').value,
+                observation: document.getElementById('observation')?.value || '',
                 activityTime: state.activityTime,
                 restTime: state.restTime,
                 completedExercises: state.completedExercises.length,
                 totalExercises: (getExercises()[state.selectedTrainingType] || []).length
             };
-
-            const history = getTrainingHistory();
-            history.unshift(training);
-            saveData('trainingHistory', history);
-
-            // Reset form
+            const h = getHistory();
+            h.unshift(training);
+            saveLocal('trainingHistory', h);
+            if (decryptedToken) {
+                try { updateSyncStatus('syncing', 'Sincronizando...'); await saveFileToGitHub(getAllLocalData()); updateSyncStatus('connected', 'Conectado'); }
+                catch (e) { console.error(e); updateSyncStatus('error', 'Erro - salvo local'); }
+            }
             resetForm();
-            
-            // Update dashboard
-            updateDashboard();
+            updateDashboardNumbers();
             renderHistory();
             generateTips();
-
-            showToast('Treino salvo com sucesso!');
+            if (btn) { btn.disabled = false; btn.textContent = '💾 Salvar Treino'; }
+            showToast('Treino salvo!');
         }
 
         function resetForm() {
@@ -1322,468 +1386,186 @@
             state.completedExercises = [];
             resetTimer('activity');
             resetTimer('rest');
-
-            document.getElementById('goalsValue').textContent = '0';
-            document.getElementById('assistsValue').textContent = '0';
-            document.getElementById('observation').value = '';
-            document.querySelectorAll('.training-type-btn').forEach(btn => btn.classList.remove('selected'));
-            document.querySelectorAll('.rating-option').forEach(opt => opt.classList.remove('selected'));
-            document.getElementById('exerciseList').innerHTML = '<p style="color: var(--text-muted); text-align: center;">Selecione um tipo de treino acima</p>';
-            document.getElementById('progressContainer').style.display = 'none';
-            document.getElementById('gameStatsCard').style.display = 'none';
+            const g = document.getElementById('goalsValue');
+            const a = document.getElementById('assistsValue');
+            const o = document.getElementById('observation');
+            const el = document.getElementById('exerciseList');
+            const pc = document.getElementById('progressContainer');
+            const gs = document.getElementById('gameStatsCard');
+            if (g) g.textContent = '0';
+            if (a) a.textContent = '0';
+            if (o) o.value = '';
+            if (el) el.innerHTML = '<p style="color:var(--text-muted);text-align:center">Selecione um treino</p>';
+            if (pc) pc.style.display = 'none';
+            if (gs) gs.style.display = 'none';
+            document.querySelectorAll('.training-type-btn').forEach(b => b.classList.remove('selected'));
+            document.querySelectorAll('.rating-option').forEach(o => o.classList.remove('selected'));
         }
 
-        // ==================== DASHBOARD ====================
-        function updateDashboard() {
-            const history = getTrainingHistory();
-            
-            // Stats
-            document.getElementById('totalTrainings').textContent = history.length;
-            document.getElementById('totalGames').textContent = history.filter(t => t.type === 'jogo').length;
-            document.getElementById('totalGoals').textContent = history.reduce((sum, t) => sum + (t.goals || 0), 0);
-            document.getElementById('totalAssists').textContent = history.reduce((sum, t) => sum + (t.assists || 0), 0);
-
-            // Charts
-            renderEvolutionChart(history);
-            renderTypeChart(history);
-            renderGameStatsChart(history);
+        // Dashboard
+        function updateDashboardNumbers() {
+            const h = getHistory();
+            const tt = document.getElementById('totalTrainings');
+            const tg = document.getElementById('totalGames');
+            const tgo = document.getElementById('totalGoals');
+            const ta = document.getElementById('totalAssists');
+            if (tt) tt.textContent = h.length;
+            if (tg) tg.textContent = h.filter(t => t.type === 'jogo').length;
+            if (tgo) tgo.textContent = h.reduce((s, t) => s + (t.goals || 0), 0);
+            if (ta) ta.textContent = h.reduce((s, t) => s + (t.assists || 0), 0);
         }
 
-        function renderEvolutionChart(history) {
-            const ctx = document.getElementById('evolutionChart').getContext('2d');
-            
-            const ratingValues = { pessimo: 1, ruim: 2, medio: 3, bom: 4, otimo: 5 };
-            const last10 = history.slice(0, 10).reverse();
-            
-            if (window.evolutionChart) window.evolutionChart.destroy();
-            
-            window.evolutionChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: last10.map(t => new Date(t.date).toLocaleDateString('pt-BR')),
-                    datasets: [{
-                        label: 'Avaliação',
-                        data: last10.map(t => ratingValues[t.rating] || 0),
-                        borderColor: '#58a6ff',
-                        backgroundColor: 'rgba(88, 166, 255, 0.1)',
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            labels: { color: '#c9d1d9' }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            min: 0,
-                            max: 5,
-                            ticks: {
-                                color: '#8b949e',
-                                callback: value => ['', 'Péssimo', 'Ruim', 'Médio', 'Bom', 'Ótimo'][value]
-                            },
-                            grid: { color: '#30363d' }
-                        },
-                        x: {
-                            ticks: { color: '#8b949e' },
-                            grid: { color: '#30363d' }
-                        }
-                    }
-                }
-            });
-        }
+        function renderCharts() {
+            const h = getHistory();
+            const rv = { pessimo: 1, ruim: 2, medio: 3, bom: 4, otimo: 5 };
 
-        function renderTypeChart(history) {
-            const ctx = document.getElementById('typeChart').getContext('2d');
-            const types = getTrainingTypes();
-            
-            const counts = {};
-            types.forEach(t => counts[t.id] = 0);
-            history.forEach(t => { if (counts[t.type] !== undefined) counts[t.type]++; });
-
-            if (window.typeChart) window.typeChart.destroy();
-
-            window.typeChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: types.map(t => t.name),
-                    datasets: [{
-                        data: types.map(t => counts[t.id]),
-                        backgroundColor: [
-                            '#58a6ff', '#f778ba', '#79c0ff', '#238636', '#f85149', '#d29922', '#a5d6ff'
-                        ],
-                        borderColor: '#161b22',
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            labels: { color: '#c9d1d9' }
-                        }
-                    }
-                }
-            });
-        }
-
-        function renderGameStatsChart(history) {
-            const ctx = document.getElementById('gameStatsChart').getContext('2d');
-            const games = history.filter(t => t.type === 'jogo').slice(0, 10).reverse();
-
-            if (window.gameStatsChart) window.gameStatsChart.destroy();
-
-            window.gameStatsChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: games.map(g => new Date(g.date).toLocaleDateString('pt-BR')),
-                    datasets: [
-                        {
-                            label: 'Gols',
-                            data: games.map(g => g.goals || 0),
-                            backgroundColor: '#58a6ff'
-                        },
-                        {
-                            label: 'Assistências',
-                            data: games.map(g => g.assists || 0),
-                            backgroundColor: '#238636'
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            labels: { color: '#c9d1d9' }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { color: '#8b949e' },
-                            grid: { color: '#30363d' }
-                        },
-                        x: {
-                            ticks: { color: '#8b949e' },
-                            grid: { color: '#30363d' }
-                        }
-                    }
-                }
-            });
-        }
-
-        // ==================== HISTORY ====================
-        function renderHistory() {
-            const container = document.getElementById('historyList');
-            const history = getTrainingHistory();
-
-            if (history.length === 0) {
-                container.innerHTML = '<p style="color: var(--text-muted); text-align: center;">Nenhum treino registrado ainda</p>';
-                return;
+            // Evolution
+            const ec = document.getElementById('evolutionChart');
+            if (ec) {
+                if (charts.evolution) charts.evolution.destroy();
+                const last10 = h.slice(0, 10).reverse();
+                charts.evolution = new Chart(ec, {
+                    type: 'line',
+                    data: { labels: last10.map(t => new Date(t.date).toLocaleDateString('pt-BR')), datasets: [{ label: 'Avaliação', data: last10.map(t => rv[t.rating] || 0), borderColor: '#58a6ff', backgroundColor: 'rgba(88,166,255,0.1)', fill: true, tension: 0.4 }] },
+                    options: { responsive: true, plugins: { legend: { labels: { color: '#c9d1d9' } } }, scales: { y: { min: 0, max: 5, ticks: { color: '#8b949e', callback: v => ['','Péssimo','Ruim','Médio','Bom','Ótimo'][v] }, grid: { color: '#30363d' } }, x: { ticks: { color: '#8b949e' }, grid: { color: '#30363d' } } } }
+                });
             }
 
-            const ratingColors = {
-                pessimo: '#f85149',
-                ruim: '#da3633',
-                medio: '#d29922',
-                bom: '#238636',
-                otimo: '#58a6ff'
-            };
+            // Type
+            const tc = document.getElementById('typeChart');
+            if (tc) {
+                if (charts.type) charts.type.destroy();
+                const types = getTypes();
+                const counts = {};
+                types.forEach(t => counts[t.id] = 0);
+                h.forEach(t => { if (counts[t.type] !== undefined) counts[t.type]++; });
+                charts.type = new Chart(tc, {
+                    type: 'doughnut',
+                    data: { labels: types.map(t => t.name), datasets: [{ data: types.map(t => counts[t.id]), backgroundColor: ['#58a6ff','#f778ba','#79c0ff','#238636','#f85149','#d29922','#a5d6ff'], borderColor: '#161b22', borderWidth: 2 }] },
+                    options: { responsive: true, plugins: { legend: { labels: { color: '#c9d1d9' } } } }
+                });
+            }
 
-            const ratingLabels = {
-                pessimo: 'Péssimo',
-                ruim: 'Ruim',
-                medio: 'Médio',
-                bom: 'Bom',
-                otimo: 'Ótimo'
-            };
-
-            container.innerHTML = history.map(t => `
-                <div class="history-item">
-                    <div>
-                        <div class="date">${new Date(t.date).toLocaleDateString('pt-BR')} - ${new Date(t.date).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}</div>
-                        <div class="type">${t.typeName || t.type}${t.type === 'jogo' ? ` | ⚽ ${t.goals} gols | 👟 ${t.assists} assist.` : ''}</div>
-                        ${t.observation ? `<div class="type" style="margin-top: 5px; font-style: italic;">"${t.observation.substring(0, 50)}${t.observation.length > 50 ? '...' : ''}"</div>` : ''}
-                    </div>
-                    <div style="display: flex; gap: 10px; align-items: center;">
-                        <span class="rating-badge" style="background: ${ratingColors[t.rating]}">${ratingLabels[t.rating]}</span>
-                        <button class="delete-btn" onclick="deleteTraining(${t.id})">🗑️</button>
-                    </div>
-                </div>
-            `).join('');
+            // Game Stats
+            const gc = document.getElementById('gameStatsChart');
+            if (gc) {
+                if (charts.gameStats) charts.gameStats.destroy();
+                const games = h.filter(t => t.type === 'jogo').slice(0, 10).reverse();
+                charts.gameStats = new Chart(gc, {
+                    type: 'bar',
+                    data: { labels: games.map(g => new Date(g.date).toLocaleDateString('pt-BR')), datasets: [{ label: 'Gols', data: games.map(g => g.goals || 0), backgroundColor: '#58a6ff' }, { label: 'Assistências', data: games.map(g => g.assists || 0), backgroundColor: '#238636' }] },
+                    options: { responsive: true, plugins: { legend: { labels: { color: '#c9d1d9' } } }, scales: { y: { beginAtZero: true, ticks: { color: '#8b949e' }, grid: { color: '#30363d' } }, x: { ticks: { color: '#8b949e' }, grid: { color: '#30363d' } } } }
+                });
+            }
         }
 
-        function deleteTraining(id) {
-            if (!confirm('Tem certeza que deseja excluir este treino?')) return;
-            
-            let history = getTrainingHistory();
-            history = history.filter(t => t.id !== id);
-            saveData('trainingHistory', history);
-            
-            updateDashboard();
+        // History
+        function renderHistory() {
+            const c = document.getElementById('historyList');
+            if (!c) return;
+            const h = getHistory();
+            if (!h.length) { c.innerHTML = '<p style="color:var(--text-muted);text-align:center">Nenhum treino</p>'; return; }
+            const colors = { pessimo: '#f85149', ruim: '#da3633', medio: '#d29922', bom: '#238636', otimo: '#58a6ff' };
+            const labels = { pessimo: 'Péssimo', ruim: 'Ruim', medio: 'Médio', bom: 'Bom', otimo: 'Ótimo' };
+            c.innerHTML = h.map(t => `<div class="history-item"><div><div class="date">${new Date(t.date).toLocaleDateString('pt-BR')} ${new Date(t.date).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</div><div class="type">${t.typeName||t.type}${t.type==='jogo'?` | ⚽${t.goals} 👟${t.assists}`:''}</div></div><div style="display:flex;gap:10px;align-items:center"><span class="rating-badge" style="background:${colors[t.rating]||'#8b949e'}">${labels[t.rating]||t.rating}</span><button class="delete-btn" onclick="deleteTraining(${t.id})">🗑️</button></div></div>`).join('');
+        }
+
+        async function deleteTraining(id) {
+            if (!confirm('Excluir?')) return;
+            saveLocal('trainingHistory', getHistory().filter(t => t.id !== id));
+            if (decryptedToken) try { await saveFileToGitHub(getAllLocalData()); } catch {}
+            updateDashboardNumbers();
             renderHistory();
             generateTips();
-            showToast('Treino excluído!');
+            showToast('Excluído!');
         }
 
-        // ==================== EXERCISE EDITOR ====================
+        // Exercise Editor
         function populateEditDropdowns() {
-            const types = getTrainingTypes();
-            const select1 = document.getElementById('editTrainingType');
-            const select2 = document.getElementById('newExerciseType');
-
-            const options = '<option value="">Selecione...</option>' + 
-                types.map(t => `<option value="${t.id}">${t.icon} ${t.name}</option>`).join('');
-            
-            select1.innerHTML = options;
-            select2.innerHTML = options;
+            const types = getTypes();
+            const opt = '<option value="">Selecione...</option>' + types.map(t => `<option value="${t.id}">${t.icon} ${t.name}</option>`).join('');
+            const e1 = document.getElementById('editTrainingType');
+            const e2 = document.getElementById('newExerciseType');
+            if (e1) e1.innerHTML = opt;
+            if (e2) e2.innerHTML = opt;
         }
 
         function loadExercisesForEdit() {
-            const typeId = document.getElementById('editTrainingType').value;
-            const container = document.getElementById('editExerciseList');
-            
-            if (!typeId) {
-                container.innerHTML = '';
-                return;
-            }
-
-            const exercises = getExercises()[typeId] || [];
-
-            container.innerHTML = exercises.map((ex, index) => `
-                <div class="exercise-item">
-                    <input type="text" value="${ex.name}" onchange="updateExercise('${typeId}', ${index}, 'name', this.value)" style="flex: 1;">
-                    <input type="text" value="${ex.details}" onchange="updateExercise('${typeId}', ${index}, 'details', this.value)" style="flex: 1;">
-                    <button class="delete-btn" onclick="deleteExercise('${typeId}', ${index})">🗑️</button>
-                </div>
-            `).join('');
+            const s = document.getElementById('editTrainingType');
+            const c = document.getElementById('editExerciseList');
+            if (!s || !c) return;
+            const id = s.value;
+            if (!id) { c.innerHTML = ''; return; }
+            const ex = getExercises()[id] || [];
+            c.innerHTML = ex.map((e, i) => `<div class="exercise-item"><input type="text" value="${e.name}" onchange="updateExercise('${id}',${i},'name',this.value)"><input type="text" value="${e.details}" onchange="updateExercise('${id}',${i},'details',this.value)"><button class="delete-btn" onclick="deleteExercise('${id}',${i})">🗑️</button></div>`).join('');
         }
 
-        function updateExercise(typeId, index, field, value) {
-            const exercises = getExercises();
-            exercises[typeId][index][field] = value;
-            saveData('exercises', exercises);
-            showToast('Exercício atualizado!');
+        async function updateExercise(tid, i, f, v) {
+            const ex = getExercises();
+            if (ex[tid]?.[i]) { ex[tid][i][f] = v; saveLocal('exercises', ex); if (decryptedToken) try { await saveFileToGitHub(getAllLocalData()); } catch {} showToast('Atualizado!'); }
         }
 
-        function deleteExercise(typeId, index) {
-            if (!confirm('Excluir este exercício?')) return;
-            
-            const exercises = getExercises();
-            exercises[typeId].splice(index, 1);
-            saveData('exercises', exercises);
-            loadExercisesForEdit();
-            showToast('Exercício excluído!');
+        async function deleteExercise(tid, i) {
+            if (!confirm('Excluir?')) return;
+            const ex = getExercises();
+            if (ex[tid]) { ex[tid].splice(i, 1); saveLocal('exercises', ex); if (decryptedToken) try { await saveFileToGitHub(getAllLocalData()); } catch {} loadExercisesForEdit(); showToast('Excluído!'); }
         }
 
-        function openAddExerciseModal() {
-            document.getElementById('addExerciseModal').classList.add('active');
-        }
+        function openAddExerciseModal() { document.getElementById('addExerciseModal')?.classList.add('active'); }
+        function closeModal() { document.getElementById('addExerciseModal')?.classList.remove('active'); }
 
-        function closeModal() {
-            document.getElementById('addExerciseModal').classList.remove('active');
-        }
-
-        function addNewExercise() {
-            const typeId = document.getElementById('newExerciseType').value;
-            const name = document.getElementById('newExerciseName').value;
-            const details = document.getElementById('newExerciseDetails').value;
-
-            if (!typeId || !name) {
-                showToast('Preencha todos os campos!', 'error');
-                return;
-            }
-
-            const exercises = getExercises();
-            if (!exercises[typeId]) exercises[typeId] = [];
-            exercises[typeId].push({ name, details });
-            saveData('exercises', exercises);
-
+        async function addNewExercise() {
+            const tid = document.getElementById('newExerciseType')?.value;
+            const name = document.getElementById('newExerciseName')?.value.trim();
+            const details = document.getElementById('newExerciseDetails')?.value.trim() || '';
+            if (!tid || !name) return showToast('Preencha os campos', 'error');
+            const ex = getExercises();
+            if (!ex[tid]) ex[tid] = [];
+            ex[tid].push({ name, details });
+            saveLocal('exercises', ex);
+            if (decryptedToken) try { await saveFileToGitHub(getAllLocalData()); } catch {}
             document.getElementById('newExerciseName').value = '';
             document.getElementById('newExerciseDetails').value = '';
             closeModal();
-            
-            document.getElementById('editTrainingType').value = typeId;
-            loadExercisesForEdit();
-            
-            showToast('Exercício adicionado!');
+            const es = document.getElementById('editTrainingType');
+            if (es) { es.value = tid; loadExercisesForEdit(); }
+            showToast('Adicionado!');
         }
 
-        // ==================== TIPS ====================
+        // Tips
         function generateTips() {
-            const container = document.getElementById('tipsContainer');
-            const history = getTrainingHistory();
+            const c = document.getElementById('tipsContainer');
+            if (!c) return;
+            const h = getHistory();
             const tips = [];
-
-            // Análise baseada no histórico
-            const ratingValues = { pessimo: 1, ruim: 2, medio: 3, bom: 4, otimo: 5 };
-            const avgRating = history.length > 0 
-                ? history.reduce((sum, t) => sum + (ratingValues[t.rating] || 0), 0) / history.length 
-                : 0;
-
-            // Contagem por tipo
-            const typeCounts = {};
-            history.forEach(t => {
-                typeCounts[t.type] = (typeCounts[t.type] || 0) + 1;
-            });
-
-            // Dicas gerais
-            if (history.length === 0) {
-                tips.push({
-                    title: '🚀 Comece Agora!',
-                    text: 'Registre seu primeiro treino para começar a acompanhar sua evolução. A consistência é a chave do sucesso!'
-                });
-            }
-
-            if (history.length > 0 && history.length < 5) {
-                tips.push({
-                    title: '📈 Continue Assim!',
-                    text: 'Você está no começo da jornada. Continue registrando seus treinos para ter dados mais precisos sobre sua evolução.'
-                });
-            }
-
-            // Dicas baseadas na média
-            if (avgRating < 2.5 && history.length >= 3) {
-                tips.push({
-                    title: '⚠️ Atenção ao Descanso',
-                    text: 'Suas avaliações estão baixas. Verifique se está descansando adequadamente, dormindo bem e se alimentando corretamente. Considere reduzir a intensidade temporariamente.'
-                });
-            }
-
-            if (avgRating >= 4 && history.length >= 5) {
-                tips.push({
-                    title: '🏆 Excelente Evolução!',
-                    text: 'Suas avaliações estão ótimas! Considere aumentar gradualmente a intensidade dos treinos para continuar evoluindo. Adicione mais repetições ou reduza o tempo de descanso.'
-                });
-            }
-
-            // Dicas por tipo de treino
-            if ((typeCounts['hiit_agilidade'] || 0) < 2 && history.length >= 5) {
-                tips.push({
-                    title: '⚡ Foque em Agilidade',
-                    text: 'Você tem poucos treinos de HIIT + Agilidade. No fut7, a mudança rápida de direção é essencial. Aumente a frequência deste tipo de treino.'
-                });
-            }
-
-            if ((typeCounts['resistencia'] || 0) < 2 && history.length >= 5) {
-                tips.push({
-                    title: '🏃 Melhore a Resistência',
-                    text: 'A base aeróbica é fundamental para aguentar os dois tempos. Inclua mais treinos de resistência na sua rotina.'
-                });
-            }
-
-            if ((typeCounts['forca_sprints'] || 0) < 2 && history.length >= 5) {
-                tips.push({
-                    title: '💪 Fortaleça as Pernas',
-                    text: 'Treinos de força ajudam a prevenir lesões e melhoram a potência dos chutes. Não negligencie este tipo de treino.'
-                });
-            }
-
-            if ((typeCounts['recuperacao'] || 0) < 1 && history.length >= 3) {
-                tips.push({
-                    title: '🔄 Não Esqueça da Recuperação',
-                    text: 'A recuperação ativa após os jogos é essencial para evitar lesões e manter a performance. Faça pelo menos uma sessão após cada jogo.'
-                });
-            }
-
-            // Dicas específicas para jogos
-            const games = history.filter(t => t.type === 'jogo');
-            if (games.length >= 3) {
-                const totalGoals = games.reduce((sum, g) => sum + (g.goals || 0), 0);
-                const avgGoals = totalGoals / games.length;
-
-                if (avgGoals < 1) {
-                    tips.push({
-                        title: '⚽ Melhore a Finalização',
-                        text: 'Sua média de gols está baixa. Pratique chutes ao gol durante os treinos e trabalhe posicionamento na área.'
-                    });
-                }
-
-                if (avgGoals >= 2) {
-                    tips.push({
-                        title: '🌟 Artilheiro!',
-                        text: 'Excelente média de gols! Continue assim e trabalhe também as assistências para ser um jogador ainda mais completo.'
-                    });
-                }
-            }
-
-            // Dicas de progressão
-            if (history.length >= 10) {
-                const recent5 = history.slice(0, 5);
-                const older5 = history.slice(5, 10);
-                
-                const recentAvg = recent5.reduce((sum, t) => sum + (ratingValues[t.rating] || 0), 0) / 5;
-                const olderAvg = older5.reduce((sum, t) => sum + (ratingValues[t.rating] || 0), 0) / 5;
-
-                if (recentAvg > olderAvg) {
-                    tips.push({
-                        title: '📈 Você Está Evoluindo!',
-                        text: `Sua média de avaliação melhorou de ${olderAvg.toFixed(1)} para ${recentAvg.toFixed(1)}. Continue com a consistência!`
-                    });
-                } else if (recentAvg < olderAvg) {
-                    tips.push({
-                        title: '📉 Atenção à Queda',
-                        text: `Sua média de avaliação caiu de ${olderAvg.toFixed(1)} para ${recentAvg.toFixed(1)}. Revise sua rotina de treinos e descanso.`
-                    });
-                }
-            }
-
-            // Dicas gerais de condicionamento
-            tips.push({
-                title: '💧 Hidratação',
-                text: 'Beba pelo menos 2-3 litros de água por dia. Antes dos treinos, hidrate-se 30 minutos antes. Durante, pequenos goles a cada 15-20 minutos.'
-            });
-
-            tips.push({
-                title: '🍌 Alimentação Pré-Treino',
-                text: 'Para treinos às 6h da manhã, coma algo leve 30-40 minutos antes: banana, torrada com pasta de amendoim ou iogurte. Evite alimentos pesados.'
-            });
-
-            tips.push({
-                title: '😴 Qualidade do Sono',
-                text: 'Durma 7-8 horas por noite. O corpo se recupera e evolui durante o sono. Evite telas 1 hora antes de dormir.'
-            });
-
-            // Renderizar dicas
-            container.innerHTML = tips.map(tip => `
-                <div class="tip-card">
-                    <h4>${tip.title}</h4>
-                    <p>${tip.text}</p>
-                </div>
-            `).join('');
+            if (!h.length) tips.push({ t: '🚀 Comece!', p: 'Registre seu primeiro treino!' });
+            tips.push({ t: '💧 Hidratação', p: 'Beba 2-3L de água por dia.' });
+            tips.push({ t: '😴 Sono', p: 'Durma 7-8h por noite.' });
+            tips.push({ t: '🍌 Pré-treino', p: 'Coma leve 30min antes.' });
+            c.innerHTML = tips.map(t => `<div class="tip-card"><h4>${t.t}</h4><p>${t.p}</p></div>`).join('');
         }
 
-        // ==================== NAVIGATION ====================
-        function showSection(sectionId) {
+        // Navigation
+        function showSection(id, tab) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-            
-            document.getElementById(sectionId).classList.add('active');
-            event.target.classList.add('active');
-
-            if (sectionId === 'dashboard') {
-                updateDashboard();
-            } else if (sectionId === 'dicas') {
-                generateTips();
-            }
+            document.getElementById(id)?.classList.add('active');
+            if (tab) tab.classList.add('active');
+            if (id === 'dashboard') { updateDashboardNumbers(); setTimeout(renderCharts, 50); }
+            if (id === 'config') updateSecurityStatus();
+            if (id === 'dicas') generateTips();
         }
 
-        // ==================== TOAST ====================
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.style.background = type === 'error' ? '#f85149' : '#238636';
-            toast.classList.add('show');
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
+        // Toast
+        function showToast(msg, type = 'success') {
+            const t = document.getElementById('toast');
+            if (!t) return;
+            t.textContent = msg;
+            t.style.background = type === 'error' ? '#f85149' : type === 'warning' ? '#d29922' : '#238636';
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
         }
 
-        // ==================== INIT ====================
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
